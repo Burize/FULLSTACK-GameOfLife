@@ -6,6 +6,7 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai'],
 
     files: [
+       
         'node_modules/jquery/dist/jquery.js',
       'test/*.js'
     ],

@@ -70,9 +70,13 @@
 "use strict";
 
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 __webpack_require__(1);
 
-__webpack_require__(3);
+var _modelJs = __webpack_require__(3);
+
+var _modelJs2 = _interopRequireDefault(_modelJs);
 
 /***/ }),
 /* 1 */
@@ -10350,6 +10354,156 @@ return jQuery;
 
 "use strict";
 
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _CellJs = __webpack_require__(4);
+
+var _CellJs2 = _interopRequireDefault(_CellJs);
+
+var Model = (function () {
+    function Model(x, y) {
+        _classCallCheck(this, Model);
+
+        this._Cells = [];
+
+        for (var i = 0; i < x; i++) {
+
+            this._Cells[i] = new Array(y);
+
+            for (var j = 0; j < y; j++) {
+                this._Cells[i][j] = new _CellJs2['default']();
+            }
+        }
+    }
+
+    _createClass(Model, [{
+        key: 'GetCells',
+        value: function GetCells() {
+
+            return JSON.parse(JSON.stringify(this._Cells));
+        }
+    }, {
+        key: 'KillCell',
+        value: function KillCell(x, y) {
+
+            this._Cells[x][y].alive = false;
+        }
+    }, {
+        key: 'RestoreCell',
+        value: function RestoreCell(x, y) {
+
+            this._Cells[x][y].alive = true;
+        }
+    }, {
+        key: 'CountNeighbors',
+        value: function CountNeighbors(x, y) {
+
+            var neighbors = 0;
+
+            if (x > 0 && y > 0) neighbors += this._Cells[x - 1][y - 1].alive;
+            if (x > 0) neighbors += this._Cells[x - 1][y].alive;
+            if (x > 0 && y < this._Cells[0].length - 1) neighbors += this._Cells[x - 1][y + 1].alive;
+            if (y > 0) neighbors += this._Cells[x][y - 1].alive;
+            if (y < this._Cells[0].length - 1) neighbors += this._Cells[x][y + 1].alive;
+
+            if (x < this._Cells.length - 1 && y > 0) neighbors += this._Cells[x + 1][y - 1].alive;
+            if (x < this._Cells.length - 1) neighbors += this._Cells[x + 1][y].alive;
+            if (x < this._Cells.length - 1 && y < this.Cells[0].length - 1) neighbors += this._Cells[x + 1][y + 1].alive;
+
+            return neighbors;
+        }
+    }, {
+        key: 'UpdateCells',
+        value: function UpdateCells() {
+
+            var _cells = new Array(this._Cells.length);
+
+            for (var i = 0; i < this._Cells.length; i++) {
+
+                _cells[i] = new Array(this._Cells[0].length);
+
+                for (var j = 0; j < this._Cells[0].length; j++) {
+
+                    var neighbors = this.CountNeighbors(i, j);
+
+                    if (neighbors == 3) {
+                        _cells[i][j] = true;
+                        continue;
+                    }
+
+                    if (neighbors == 2 && this._Cells[i][j].alive == true) {
+                        _cells[i][j] = true;
+                        continue;
+                    }
+
+                    _cells[i][j] = false;
+                }
+            }
+
+            for (var i = 0; i < this._Cells.length; i++) {
+                for (var j = 0; j < this._Cells[0].length; j++) {
+                    this._Cells[i][j].alive = _cells[i][j];
+                }
+            }
+        }
+    }, {
+        key: 'ChangeSize',
+        value: function ChangeSize(x, y) {
+
+            var _cells = new Array(x);
+
+            for (var i = 0; i < x; i++) {
+
+                _cells[i] = new Array(this._Cells[0].length);
+
+                for (var j = 0; i < y; j++) {
+
+                    if (i < this._Cells.length && j < this._Cells[0].length) _cells[i][j] = this._Cells[i][j];else _cells[i][j] = new _CellJs2['default']();
+                }
+            }
+
+            this._Cells = _cells;
+        }
+    }]);
+
+    return Model;
+})();
+
+exports['default'] = Model;
+module.exports = exports['default'];
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Cell = function Cell() {
+    var alive = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+    _classCallCheck(this, Cell);
+
+    this.alive = alive;
+};
+
+exports["default"] = Cell;
+module.exports = exports["default"];
 
 /***/ })
 /******/ ]);

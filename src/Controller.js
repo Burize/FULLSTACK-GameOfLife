@@ -1,2 +1,3 @@
-import './view.js'
-import './model.js'
+import './view.js';
+import Model from './model.js';
+
