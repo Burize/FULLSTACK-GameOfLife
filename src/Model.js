@@ -33,6 +33,11 @@ export default class Model {
             
             this._Cells[x][y].alive = true;
         }
+    
+    ChangeCell(x, y){
+        
+        this._Cells[x][y].alive ? this.KillCell(x, y) : this.RestoreCell(x, y);
+    }
         
     CountNeighbors(x,y){
             
@@ -53,7 +58,7 @@ export default class Model {
                 neighbors +=this._Cells[x+1][y-1].alive;
             if(x < this._Cells.length - 1)
                 neighbors +=this._Cells[x+1][y].alive;      
-             if(x < this._Cells.length - 1 && y < this.Cells[0].length - 1)
+             if(x < this._Cells.length - 1 && y < this._Cells[0].length - 1)
                 neighbors +=this._Cells[x+1][y+1].alive;        
               
             return neighbors;
@@ -94,19 +99,23 @@ export default class Model {
             for(let j=0; j<this._Cells[0].length; j++)
                 this._Cells[i][j].alive = _cells[i][j];
         
-        
+        return JSON.parse(JSON.stringify(this._Cells));
         
     }
     
     ChangeSize(x,y){
         
+        x = x !==null ? x : this._Cells.length;
+        
+        y = y !==null ? y : this._Cells[0].length;
+        
         var _cells =  new Array(x);
         
         for(let i=0; i<x; i++){
 
-            _cells[i] =  new Array(this._Cells[0].length);
+            _cells[i] =  new Array(y);
 
-             for(let j=0; i<y; j++){
+             for(let j=0; j<y; j++){
                  
                  if(i < this._Cells.length && j < this._Cells[0].length)
                      _cells[i][j] = this._Cells[i][j];

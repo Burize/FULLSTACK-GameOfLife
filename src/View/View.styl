@@ -1,0 +1,47 @@
+@font-face{
+    
+    font-family LatoLight;
+    src url(./Fonts/Lato-Light.ttf)
+}
+
+
+html, body{
+    
+   font-family LatoLight;
+}
+
+
+.container{
+ 
+    width 1100px;
+    margin auto;
+    margin-top 3%;
+    
+    .controls{
+        
+        display flex;
+        margin-bottom 2em;
+        
+        > *{
+            
+            margin-right 2em;
+            
+            span{
+                
+                user-select none;
+                font-size 1.2em;
+            }
+        }
+    }
+    
+    .field{
+        
+        canvas{
+            
+            margin auto;
+            display block;
+            border solid black 1px;
+        }
+    }
+    
+}

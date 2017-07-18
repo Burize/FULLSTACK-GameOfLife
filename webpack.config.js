@@ -11,7 +11,7 @@ module.exports = {
     entry: paths.source + 'Controller.js',
     output: {
         path: paths.build,
-        publicPath: '/public',
+        publicPath: './public/',
         filename: "[name].js"
     },
   
