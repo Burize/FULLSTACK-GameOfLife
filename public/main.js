@@ -10332,98 +10332,162 @@ return jQuery;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _ViewViewJs = __webpack_require__(2);
+var _ControllerControllerJs = __webpack_require__(2);
 
-var _ViewViewJs2 = _interopRequireDefault(_ViewViewJs);
-
-var _modelJs = __webpack_require__(9);
-
-var _modelJs2 = _interopRequireDefault(_modelJs);
+var _ControllerControllerJs2 = _interopRequireDefault(_ControllerControllerJs);
 
 $(function () {
 
-    var model = new _modelJs2['default'](20, 20);
-
-    var GameTimer;
-
-    var pause = true;
-
-    var previous_field = [[], []];
-
-    var end_game = function end_game(current_field) {
-
-        if (previous_field.length !== current_field.length || previous_field[0].length !== current_field[0].length) {
-            previous_field = current_field;
-            return false;
-        }
-
-        for (var i = 0; i < previous_field.length; i++) {
-            for (var j = 0; j < previous_field[0].length; j++) {
-                if (previous_field[i][j].alive !== current_field[i][j].alive) {
-                    previous_field = current_field;
-
-                    return false;
-                }
-            }
-        }return true;
-    };
-
-    var start_click = function start_click() {
-
-        if (pause) {
-            pause = false;
-
-            GameTimer = setTimeout(function tick() {
-
-                var field = model.UpdateCells();
-
-                if (end_game(field)) {
-                    console.log('end');
-                    pause = true;
-                    view.EndGame();
-                    return;
-                }
-
-                view.ReDraw(field);
-
-                GameTimer = setTimeout(tick, 300);
-            }, 300);
-        }
-    };
-
-    var pause_click = function pause_click() {
-
-        pause = true;
-        clearTimeout(GameTimer);
-    };
-
-    var field_click = function field_click(x, y) {
-
-        if (pause) {
-
-            model.ChangeCell(x, y);
-            view.ReDraw(model.GetCells());
-        }
-    };
-
-    var change_width = function change_width(value) {
-
-        model.ChangeSize(value, null);
-        view.ReDraw(model.GetCells());
-    };
-
-    var change_height = function change_height(value) {
-
-        model.ChangeSize(null, value);
-        view.ReDraw(model.GetCells());
-    };
-
-    var view = new _ViewViewJs2['default'](20, 20, start_click, pause_click, field_click, change_width, change_height);
+    var _GameOfLife = new _ControllerControllerJs2['default'](20, 20);
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _ViewViewJs = __webpack_require__(3);
+
+var _ViewViewJs2 = _interopRequireDefault(_ViewViewJs);
+
+var _ModelModelJs = __webpack_require__(11);
+
+var _ModelModelJs2 = _interopRequireDefault(_ModelModelJs);
+
+var Controller = (function () {
+    function Controller(x, y) {
+        _classCallCheck(this, Controller);
+
+        var _this = this;
+        this._model = new _ModelModelJs2['default'](x, y);
+
+        this._GameTimer;
+
+        this._pause = true;
+
+        this._previous_field = [[], []];
+
+        this._view = new _ViewViewJs2['default'](x, y);
+
+        this._view.events.subscribe('Start_game', function () {
+            _this.Start_game.call(_this);
+        });
+
+        this._view.events.subscribe('Pause', function () {
+            _this.Pause_click.call(_this);
+        });
+
+        this._view.events.subscribe('Field_Click', function (coordinates) {
+            _this.Field_click.call(_this, coordinates);
+        });
+
+        this._view.events.subscribe('Change_Width', function (width) {
+            _this.Change_width.call(_this, width);
+        });
+
+        this._view.events.subscribe('Change_Height', function (height) {
+            _this.Change_height.call(_this, height);
+        });
+    }
+
+    _createClass(Controller, [{
+        key: 'End_game',
+        value: function End_game(current_field) {
+
+            if (this._previous_field.length !== current_field.length || this._previous_field[0].length !== current_field[0].length) {
+                this._previous_field = current_field;
+                return false;
+            }
+
+            for (var i = 0; i < this._previous_field.length; i++) {
+                for (var j = 0; j < this._previous_field[0].length; j++) {
+                    if (this._previous_field[i][j].alive !== current_field[i][j].alive) {
+                        this._previous_field = current_field;
+
+                        return false;
+                    }
+                }
+            }return true;
+        }
+    }, {
+        key: 'Start_game',
+        value: function Start_game() {
+
+            var _this = this;
+
+            if (_this._pause) {
+                _this._pause = false;
+
+                _this._GameTimer = setTimeout(function tick() {
+
+                    var field = _this._model.UpdateCells();
+
+                    if (_this.End_game(field)) {
+                        _this._pause = true;
+                        _this._view.EndGame();
+                        return;
+                    }
+
+                    _this._view.ReDraw(field);
+
+                    _this._GameTimer = setTimeout(tick, 300);
+                }, 300);
+            }
+        }
+    }, {
+        key: 'Pause_click',
+        value: function Pause_click() {
+
+            this._pause = true;
+            clearTimeout(this._GameTimer);
+        }
+    }, {
+        key: 'Field_click',
+        value: function Field_click(coordinates) {
+
+            if (this._pause) {
+
+                this._model.ChangeCell(coordinates.x, coordinates.y);
+                this._view.ReDraw(this._model.GetCells());
+            }
+        }
+    }, {
+        key: 'Change_width',
+        value: function Change_width(width) {
+
+            this._model.ChangeSize(width, null);
+            this._view.ReDraw(this._model.GetCells());
+        }
+    }, {
+        key: 'Change_height',
+        value: function Change_height(height) {
+
+            this._model.ChangeSize(null, height);
+            this._view.ReDraw(this._model.GetCells());
+        }
+    }]);
+
+    return Controller;
+})();
+
+exports['default'] = Controller;
+module.exports = exports['default'];
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10435,53 +10499,65 @@ Object.defineProperty(exports, '__esModule', {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-__webpack_require__(3);
+__webpack_require__(4);
+
+var _EventEmitterJs = __webpack_require__(10);
+
+var _EventEmitterJs2 = _interopRequireDefault(_EventEmitterJs);
 
 var View = (function () {
-    function View(width, height, start_click, pause_click, field_click, change_width, change_height) {
+    function View(width, height) {
         _classCallCheck(this, View);
 
         var _this = this;
         this._width = width;
         this._height = height;
 
+        this.events = new _EventEmitterJs2['default']();
+
         var container = $('<article/>').addClass('container');
 
         var controls = $('<section/>').addClass('controls');
-        var controls__start = $('<button>Старт</button>').attr('id', 'btn_start').click(start_click);
-        var controls__pause = $('<button>Пауза</button>').attr('id', 'btn_pause').click(pause_click);
+        this.button_start = $('<button>Старт</button>').addClass('btn_start').click(function () {
+            _this.events.emit('Start_game');
+        });
+        this.button_pause = $('<button>Пауза</button>').attr('id', 'btn_pause').click(function () {
+            _this.events.emit('Pause');
+        });
 
         var controls__width = $('<div/>').addClass('controls__width');
-        var input_width = $('<input/>').attr({ id: 'controls__width-input', type: 'number', min: '1' }).val(width).blur(function () {
+        this.input_width = $('<input/>').attr({ id: 'controls__width-input', type: 'number', min: '1' }).val(width).blur(function () {
 
             _this._width = this.value;
             _this._canvas.width = _this._width * _this.cell_size;
-            change_width(this.value);
+            _this.events.emit('Change_Width', this.value);
         }).on('keyup', function (e) {
             if (e.keyCode == 13) {
                 this.blur();
             }
         });
 
-        controls__width.append($('<span>Ширина: </span>'), input_width);
+        controls__width.append($('<span>Ширина: </span>'), this.input_width);
 
         var controls__height = $('<div/>').addClass('controls__height');
-        var input_height = $('<input/>').attr({ id: 'controls__height-input', type: 'number', min: '1' }).val(height).blur(function () {
+        this.input_height = $('<input/>').attr({ id: 'controls__height-input', type: 'number', min: '1' }).val(height).blur(function () {
 
             _this._height = this.value;
             _this._canvas.height = _this._height * _this.cell_size;
-            change_height(this.value);
+            _this.events.emit('Change_Height', this.value);
         }).on('keyup', function (e) {
             if (e.keyCode == 13) {
                 this.blur();
             }
         });
 
-        controls__height.append($('<span>Высота: </span>'), input_height);
+        controls__height.append($('<span>Высота: </span>'), this.input_height);
 
-        controls.append(controls__start, controls__pause, controls__width, controls__height);
+        controls.append(this.button_start, this.button_pause, controls__width, controls__height);
 
         container.append(controls);
 
@@ -10508,10 +10584,7 @@ var View = (function () {
             }
         }$(this._canvas).click(function (e) {
 
-            var x = e.pageX - this.offsetLeft;
-            var y = e.pageY - this.offsetTop;
-
-            field_click(parseInt(x / _this.cell_size), parseInt(y / _this.cell_size));
+            _this.events.emit('Field_Click', { x: parseInt(e.offsetX / _this.cell_size), y: parseInt(e.offsetY / _this.cell_size) });
         });
     }
 
@@ -10546,13 +10619,13 @@ module.exports = exports['default'];
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(4);
+var content = __webpack_require__(5);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -10560,7 +10633,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(7)(content, options);
+var update = __webpack_require__(8)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -10577,21 +10650,21 @@ if(false) {
 }
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(5)(undefined);
+exports = module.exports = __webpack_require__(6)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "@font-face {\n  font-family: LatoLight;\n  src: url(" + __webpack_require__(6) + ");\n}\nhtml,\nbody {\n  font-family: LatoLight;\n}\n.container {\n  width: 1100px;\n  margin: auto;\n  margin-top: 3%;\n}\n.container .controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin-bottom: 2em;\n}\n.container .controls > * {\n  margin-right: 2em;\n}\n.container .controls > * span {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  font-size: 1.2em;\n}\n.container .field canvas {\n  margin: auto;\n  display: block;\n  border: solid #000 1px;\n}\n", ""]);
+exports.push([module.i, "@font-face {\n  font-family: LatoLight;\n  src: url(" + __webpack_require__(7) + ");\n}\nhtml,\nbody {\n  font-family: LatoLight;\n}\n.container {\n  width: 1100px;\n  margin: auto;\n  margin-top: 3%;\n}\n.container .controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin-bottom: 2em;\n}\n.container .controls > * {\n  margin-right: 2em;\n}\n.container .controls > * span {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  font-size: 1.2em;\n}\n.container .field canvas {\n  margin: auto;\n  display: block;\n  border: solid #000 1px;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 /*
@@ -10673,13 +10746,13 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "Lato-Light.ttf";
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -10725,7 +10798,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(8);
+var	fixUrls = __webpack_require__(9);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -11038,7 +11111,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 
@@ -11133,7 +11206,63 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var EventEmitter = (function () {
+  function EventEmitter() {
+    _classCallCheck(this, EventEmitter);
+
+    this.events = {};
+  }
+
+  _createClass(EventEmitter, [{
+    key: "emit",
+    value: function emit(eventName, data) {
+      var event = this.events[eventName];
+      if (event) {
+        event.forEach(function (fn) {
+          fn.call(null, data);
+        });
+      }
+    }
+  }, {
+    key: "subscribe",
+    value: function subscribe(eventName, fn) {
+      var _this = this;
+
+      if (!this.events[eventName]) {
+        this.events[eventName] = [];
+      }
+
+      this.events[eventName].push(fn);
+      return function () {
+        _this.events[eventName] = _this.events[eventName].filter(function (eventFn) {
+          return fn !== eventFn;
+        });
+      };
+    }
+  }]);
+
+  return EventEmitter;
+})();
+
+exports["default"] = EventEmitter;
+module.exports = exports["default"];
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11149,7 +11278,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _CellJs = __webpack_require__(10);
+var _CellJs = __webpack_require__(12);
 
 var _CellJs2 = _interopRequireDefault(_CellJs);
 
@@ -11276,7 +11405,7 @@ exports['default'] = Model;
 module.exports = exports['default'];
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

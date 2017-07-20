@@ -1,5 +1,5 @@
-import Model from '../src/model.js';
-import Cell from '../src/Cell.js';
+import Model from '../src/Model/model.js';
+import Cell from '../src/Model/Cell.js';
 
 
 describe('Model', function() {
@@ -10,18 +10,19 @@ describe('Model', function() {
         
         it('should return array[3][3]', function(){
             
-            assert.isTrue( Array.isArray(model._Cells));
-            assert.isTrue( Array.isArray(model._Cells[0]));
-            assert.isTrue( Array.isArray(model._Cells[1]));
-            assert.isTrue( Array.isArray(model._Cells[2]));
+            assert.instanceOf(model._Cells, Array)
+            assert.instanceOf(model._Cells[0], Array)
+            assert.instanceOf(model._Cells[1], Array)
+            assert.instanceOf(model._Cells[2], Array)
+            
         });
         
         
         it('elements should be cells', function(){
              
-            assert.isFalse( model._Cells[0][0] instanceof Cell);
-            assert.isFalse( model._Cells[1][1] instanceof Cell);
-            assert.isFalse( model._Cells[2][2] instanceof Cell);
+            assert.instanceOf(model._Cells[0][0], Cell)
+            assert.instanceOf(model._Cells[1][1], Cell)
+            assert.instanceOf(model._Cells[2][2], Cell)
         });
         
         it('cells should be dead', function(){
@@ -32,6 +33,7 @@ describe('Model', function() {
         });
     });
     
+    
     describe('GetCells', function(){
         
         var model = new Model(3,3);
@@ -39,21 +41,12 @@ describe('Model', function() {
         it('should return array[3][3]', function(){
             
             var cells = model.GetCells()
-            assert.isTrue( Array.isArray(cells));
-            assert.isTrue( Array.isArray(cells[0]));
-            assert.isTrue( Array.isArray(cells[1]));
-            assert.isTrue( Array.isArray(cells[2]));
+            assert.instanceOf(cells, Array)
+            assert.instanceOf(cells[0], Array)
+            assert.instanceOf(cells[1], Array)
+            assert.instanceOf(cells[2], Array)
         });
         
-        
-        it('elements should be cells', function(){
-            
-             var cells = model.GetCells()
-             
-            assert.isFalse( cells[0][0] instanceof Cell);
-            assert.isFalse( cells[1][1] instanceof Cell);
-            assert.isFalse( cells[2][2] instanceof Cell);
-        });
         
         it('cells should be dead', function(){
             
@@ -72,16 +65,17 @@ describe('Model', function() {
         var model = new Model(3,3);
         
         it('dead cell should be dead after execute', function() {
-
+            
+            model._Cells[0][0].alive = false;
             model.KillCell(0,0);
-            assert.isFalse(model.GetCells()[0][0].alive );
+            assert.isFalse(model._Cells[0][0].alive );
         });
 
         it('alive cell should be dead after execute', function() {
 
-            model.RestoreCell(0,0);
+            model._Cells[0][0].alive = true;
             model.KillCell(0,0);
-            assert.isFalse(model.GetCells()[0][0].alive );
+            assert.isFalse(model._Cells[0][0].alive );
         });
         
   });
@@ -93,16 +87,17 @@ describe('Model', function() {
         
         it('dead cell should be alive after execute', function() {
 
-            model.RestoreCell(1,0);
-            assert.isTrue(model.GetCells()[1][0].alive);
+            model._Cells[0][0].alive = false;
+            model.RestoreCell(0,0);
+            assert.isTrue(model._Cells[0][0].alive);
         });
 
         it('alive cell should be alive after execute', function() {
 
             
-            model.RestoreCell(2,0);
-            model.RestoreCell(2,0);
-            assert.isTrue(model.GetCells()[2][0].alive);
+            model._Cells[0][0].alive = true;
+            model.RestoreCell(0,0);
+            assert.isTrue(model._Cells[0][0].alive);
         });
         
   });
@@ -255,24 +250,30 @@ describe('Model', function() {
             model.RestoreCell(0,0);
             model.RestoreCell(1,1);
             
+            assert.lengthOf(model._Cells, 2)
+            assert.lengthOf(model._Cells[0], 2)
+            
             model.ChangeSize(3,4);
             
-            var cells = model.GetCells();
-            assert.isTrue(cells[0][0].alive);
-            assert.isFalse(cells[1][0].alive);
-            assert.isFalse(cells[0][1].alive);
-            assert.isTrue(cells[1][1].alive);
+            assert.lengthOf(model._Cells, 3)
+            assert.lengthOf(model._Cells[0], 4)
             
             
-            assert.isFalse(cells[2][0].alive);
-            assert.isFalse(cells[2][1].alive);
-            assert.isFalse(cells[2][2].alive);
-            assert.isFalse(cells[2][3].alive);
+            assert.isTrue(model._Cells[0][0].alive);
+            assert.isFalse(model._Cells[1][0].alive);
+            assert.isFalse(model._Cells[0][1].alive);
+            assert.isTrue(model._Cells[1][1].alive);
             
-            assert.isFalse(cells[1][2].alive);
-            assert.isFalse(cells[2][2].alive);
-            assert.isFalse(cells[1][3].alive);
-            assert.isFalse(cells[2][3].alive);
+            
+            assert.isFalse(model._Cells[2][0].alive);
+            assert.isFalse(model._Cells[2][1].alive);
+            assert.isFalse(model._Cells[2][2].alive);
+            assert.isFalse(model._Cells[2][3].alive);
+            
+            assert.isFalse(model._Cells[1][2].alive);
+            assert.isFalse(model._Cells[2][2].alive);
+            assert.isFalse(model._Cells[1][3].alive);
+            assert.isFalse(model._Cells[2][3].alive);
             
         });
         });

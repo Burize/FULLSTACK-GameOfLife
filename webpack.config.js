@@ -8,7 +8,7 @@ var paths = {
 };
 
 module.exports = {
-    entry: paths.source + 'Controller.js',
+    entry: paths.source + 'main.js',
     output: {
         path: paths.build,
         publicPath: './public/',

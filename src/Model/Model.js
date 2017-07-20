@@ -35,8 +35,8 @@ export default class Model {
         }
     
     ChangeCell(x, y){
-        
-        this._Cells[x][y].alive ? this.KillCell(x, y) : this.RestoreCell(x, y);
+       
+        this._Cells[x][y].alive ? this.KillCell(x, y) : this.RestoreCell(x, y); 
     }
         
     CountNeighbors(x,y){

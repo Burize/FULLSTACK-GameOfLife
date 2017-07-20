@@ -3,11 +3,13 @@ const webpackConfig = require('./webpack.config.js');
 module.exports = function (config) {
   config.set({
     basePath: '',
-    frameworks: ['mocha', 'chai'],
+    frameworks: ['mocha', 'chai', 'sinon'],
 
     files: [
        
-        'node_modules/jquery/dist/jquery.js',
+        'node_modules/jquery/dist/jquery.js', 
+        'node_modules/Canteen/build/canteen.js',
+        'node_modules/chai/chai.js',
       'test/*.js'
     ],
     exclude: [
