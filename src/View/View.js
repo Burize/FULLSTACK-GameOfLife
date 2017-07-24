@@ -7,52 +7,65 @@ export default class View{
     
     constructor( width, height){
         
-        var _this = this; 
+        let _this = this; 
         this._width =  width;
         this._height = height;
         
         this.events = new EventEmitter();
         
-        var container = $('<article/>').addClass('container');
+        let container = $('<article/>').addClass('container');
         
-        var controls = $('<section/>').addClass('controls');
-        this.button_start = $('<button>Старт</button>').addClass('btn_start')
-        .click(function(){
-             _this.events.emit('Start_game');                                                                         
-        });
-        this.button_pause = $('<button>Пауза</button>').attr('id','btn_pause')
-        .click(function(){
-             _this.events.emit('Pause');                                                                         
-        });
+        let controls = $('<section/>').addClass('controls');
+        
+        this.button_start = $('<button>Старт</button>')
+            .addClass('controls__btn-start')
+            .click( 'click.button_start', () => this.events.emit('Start_game') );
+        
+        this.button_pause = $('<button>Пауза</button>')
+            .addClass('controls__btn-pause')
+            .on( 'click.button_pause', () => this.events.emit('Pause') );
 
-        var controls__width = $('<div/>').addClass('controls__width');
-        this.input_width = $('<input/>').attr({id: 'controls__width-input', type: 'number', min: '1'}).val(width)
-        .blur( function(){ 
+        let controls__width = $('<div/>').addClass('controls__width');
+        
+        this.input_width = $('<input/>')
+            .attr({id: 'controls__width-input', type: 'number', min: '1'}).val(width)
+            .on('blur.input_width', function(){ 
+
+                _this._width = this.value;
+                _this._canvas.width = _this._width * _this.cell_size ; 
+                _this.events.emit('Change_Width',this.value);
+            })
+            .on('keyup.input_width', function (e) {
             
-            _this._width = this.value;
-            _this._canvas.width = _this._width * _this.cell_size ; 
-            _this.events.emit('Change_Width',this.value);
-        }).on('keyup', function (e) {
-            if (e.keyCode == 13) {
-               this.blur();
-            }
-        });
+                if(this.value < 1) this.value = 1;
+
+                if(e.keyCode == 13) this.blur();
+            })
+            .on("click.mozillaSpecial", function(){
+                $(this).focus();
+            });
         
         controls__width.append($('<span>Ширина: </span>'), this.input_width);
 
-        var controls__height = $('<div/>').addClass('controls__height');
-        this.input_height = $('<input/>').attr({id: 'controls__height-input', type: 'number', min: '1'}).val(height)
-        .blur( function(){ 
-            
-            _this._height = this.value;
-            _this._canvas.height = _this._height * _this.cell_size ; 
-            _this.events.emit('Change_Height',this.value);
-        }).
-        on('keyup', function (e) {
-            if (e.keyCode == 13) {
-               this.blur();
-            }
-        });
+        let controls__height = $('<div/>').addClass('controls__height');
+        
+        this.input_height = $('<input/>')
+            .attr({id: 'controls__height-input', type: 'number', min: '1'}).val(height)
+            .on('blur.input_height', function(){ 
+
+                _this._height = this.value;
+                _this._canvas.height = _this._height * _this.cell_size ; 
+                _this.events.emit('Change_Height',this.value);
+            })
+            .on('keyup.input_height', function (e) {
+
+                if(this.value < 1) this.value = 1;
+
+                if(e.keyCode == 13) this.blur();
+            })
+            .on("click.mozillaSpecial", function(){
+                $(this).focus();
+            });
         
         controls__height.append($('<span>Высота: </span>'), this.input_height);
 
@@ -60,9 +73,11 @@ export default class View{
 
         container.append(controls);
 
-        var field = $('<section/>').addClass('field');
+        let field = $('<section/>').addClass('field');
+        
         this._canvas = document.createElement('canvas');
         this._canvas.className = 'field__canvas';
+        
         field.append(this._canvas);
         container.append(field);
 
@@ -82,30 +97,37 @@ export default class View{
             for(let j=0; j < this._height; j++)
                 this._ctx.strokeRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size)
        
-        $(this._canvas).click(function(e){
+        $(this._canvas).click((e) => {
             
-        
-            _this.events.emit('Field_Click', {x: parseInt( e.offsetX / _this.cell_size), y: parseInt( e.offsetY / _this.cell_size)});
+            console.log(parseInt( e.offsetX / this.cell_size));
+            
+            this.events.emit('Field_Click', {x: parseInt( e.offsetX / this.cell_size), y: parseInt( e.offsetY / this.cell_size)});
+            
+            
         });
         
         
     }
 
+    
     ReDraw(field){
        
         this._canvas.width = this._width * this.cell_size ; 
         this._canvas.height = this._height * this.cell_size ; 
         
-        for(let i=0; i < field.length; i++ )
-            for(let j=0; j < field[0].length; j++)
-                {
-                    this._ctx.clearRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size)
+         field.forEach((line, x)=>{
+             
+             line.forEach( (cell, y)=> {
+                 
+                 this._ctx.clearRect(x * this.cell_size, y * this.cell_size,  this.cell_size,  this.cell_size)
                     
-                   if(field[i][j].alive)
-                    this._ctx.fillRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size)
-                else
-                    this._ctx.strokeRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size) 
-                }  
+                    if(cell.alive)
+                        this._ctx.fillRect(x * this.cell_size, y * this.cell_size,  this.cell_size,  this.cell_size)
+                    else
+                        this._ctx.strokeRect(x * this.cell_size, y * this.cell_size,  this.cell_size,  this.cell_size) 
+             });
+         });
+  
     }
     
     EndGame(){

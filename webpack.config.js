@@ -61,17 +61,13 @@ module.exports = {
                 loader: require.resolve("url-loader") 
             },
             {
-                test: /\.svg$/,
-                loader: "url-loader&limit=10000&mimetype=image/svg"
-            },
-            {
                 test: /\.jsx$/,
                 loader: "babel-loader",
                 exclude: [/node_modules/, /public/]
             },
          
          {
-               test: /\.(eot|woff|woff2|ttf|otf)$/,
+               test: /\.(eot|woff|woff2|ttf|otf|svg)$/,
                 loader: 'url-loader?limit=30000&name=[name].[ext]'  
             },
             {

@@ -1,13 +1,19 @@
 @font-face{
     
     font-family LatoLight;
-    src url(./Fonts/Lato-Light.ttf)
+    src url(./Fonts/Lato-Light.woff) format('woff'),
+        url(./Fonts/Lato-Light.ttf) format('truetype'),
+        url(./Fonts/Lato-Light.svg#LatoLight) format('svg');
+    font-style normal;
+    font-weight 300;
 }
 
 
-html, body{
+body{
     
    font-family LatoLight;
+   font-style normal;
+   font-weight 300;
 }
 
 
@@ -25,6 +31,10 @@ html, body{
         > *{
             
             margin-right 2em;
+            
+            input::-ms-clear {
+                display: none;
+            }
             
             span{
                 

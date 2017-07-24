@@ -6,7 +6,6 @@ export default class Controller{
 
     constructor(x,y){
         
-        var _this = this;
         this._model = new Model(x,y);
         
         this._GameTimer;
@@ -17,25 +16,15 @@ export default class Controller{
         
         this._view = new View(x, y);
         
-        this._view.events.subscribe('Start_game', function(){
-          _this.Start_game.call(_this);  
-        } );
+        this._view.events.subscribe('Start_game', () => this.Start_game.call(this) );
         
-        this._view.events.subscribe('Pause', function(){
-          _this.Pause_click.call(_this);  
-        } );
+        this._view.events.subscribe('Pause', () => this.Pause_click.call(this) );
         
-        this._view.events.subscribe('Field_Click', function(coordinates){
-          _this.Field_click.call(_this, coordinates);  
-        } );
+        this._view.events.subscribe('Field_Click', (coordinates) => this.Field_click.call(this, coordinates) );
         
-        this._view.events.subscribe('Change_Width', function(width){
-          _this.Change_width.call(_this, width);  
-        } );
+        this._view.events.subscribe('Change_Width', (width) => this.Change_width.call(this, width) );
         
-        this._view.events.subscribe('Change_Height', function(height){
-          _this.Change_height.call(_this, height);  
-        } );
+        this._view.events.subscribe('Change_Height', (height) => this.Change_height.call(this, height) );
     }
     
     End_game(current_field){
@@ -55,8 +44,7 @@ export default class Controller{
                             this._previous_field = current_field; 
                             
                             return false;
-                        }
-                
+                        } 
                 }
    
         return true;
@@ -64,11 +52,11 @@ export default class Controller{
      
     Start_game(){
        
-        var _this = this;
+        let _this = this;
         
         if(_this._pause)
             {
-                _this._pause = false;
+               _this._pause = false;
                 
                _this._GameTimer = setTimeout(function tick() {
         
@@ -77,20 +65,17 @@ export default class Controller{
         
                 if(_this.End_game(field))
                     {  
-                        _this._pause=true;
+                        _this._pause = true;
                         _this._view.EndGame();
                         return;
                     }
                    
                 _this._view.ReDraw( field );
-                   
-                   
-                   
+       
                 _this._GameTimer = setTimeout(tick, 300);
 
                 }, 300); 
             }
-        
         
     }
     
@@ -113,14 +98,13 @@ export default class Controller{
     
     Change_width(width){
         
-        this._model.ChangeSize(width, null);
+        this._model.ChangeWidth(width);
         this._view.ReDraw( this._model.GetCells() );
-     
     }
     
     Change_height(height){
         
-        this._model.ChangeSize(null, height);
+        this._model.ChangeHeight(height);
         this._view.ReDraw( this._model.GetCells() );
     }
     
