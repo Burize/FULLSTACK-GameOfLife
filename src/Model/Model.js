@@ -18,27 +18,27 @@ export default class Model {
     }
    
 
-    GetCells(){
+    getCells(){
         
         return JSON.parse(JSON.stringify(this._Cells));
     };  
      
-    KillCell(x, y){
+    killCell(x, y){
             
             this._Cells[x][y].alive = false;
         }
         
-    RestoreCell(x, y){
+    restoreCell(x, y){
             
             this._Cells[x][y].alive = true;
         }
     
-    ChangeCell(x, y){
+    changeCell(x, y){
        
-        this._Cells[x][y].alive ? this.KillCell(x, y) : this.RestoreCell(x, y); 
+        this._Cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y); 
     }
         
-    CountNeighbors(x,y){
+    countNeighbors(x,y){
             
             let neighbors = 0;
             
@@ -69,13 +69,13 @@ export default class Model {
             return neighbors;
         }
     
-    UpdateCells(){
+    updateCells(){
         
         let _cells =  this._Cells.map( (line, x) => {
             
             return  line.map( (cell, y) =>{
                 
-                   let neighbors = this.CountNeighbors(x,y);
+                   let neighbors = this.countNeighbors(x,y);
                     
                     if(neighbors === 3) return true;
   
@@ -95,7 +95,7 @@ export default class Model {
         
     }
     
-    ChangeWidth(x){
+    changeWidth(x){
         
         var _cells =  [];
         
@@ -119,7 +119,7 @@ export default class Model {
  
     }
     
-    ChangeHeight(y){
+    changeHeight(y){
         
         var _cells =  [];
         

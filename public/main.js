@@ -10375,48 +10375,48 @@ var Controller = (function () {
 
         this._model = new _ModelModelJs2['default'](x, y);
 
-        this._GameTimer;
+        this._gameTimer;
 
         this._pause = true;
 
-        this._previous_field = [[], []];
+        this._previousField = [[], []];
 
         this._view = new _ViewViewJs2['default'](x, y);
 
-        this._view.events.subscribe('Start_game', function () {
-            return _this2.Start_game.call(_this2);
+        this._view.events.subscribe('startGame', function () {
+            return _this2.startGame.call(_this2);
         });
 
-        this._view.events.subscribe('Pause', function () {
-            return _this2.Pause_click.call(_this2);
+        this._view.events.subscribe('pause', function () {
+            return _this2.pauseClick.call(_this2);
         });
 
-        this._view.events.subscribe('Field_Click', function (coordinates) {
-            return _this2.Field_click.call(_this2, coordinates);
+        this._view.events.subscribe('fieldClick', function (coordinates) {
+            return _this2.fieldClick.call(_this2, coordinates);
         });
 
-        this._view.events.subscribe('Change_Width', function (width) {
-            return _this2.Change_width.call(_this2, width);
+        this._view.events.subscribe('changeWidth', function (width) {
+            return _this2.changeWidth.call(_this2, width);
         });
 
-        this._view.events.subscribe('Change_Height', function (height) {
-            return _this2.Change_height.call(_this2, height);
+        this._view.events.subscribe('changeHeight', function (height) {
+            return _this2.changeHeight.call(_this2, height);
         });
     }
 
     _createClass(Controller, [{
-        key: 'End_game',
-        value: function End_game(current_field) {
+        key: 'endGame',
+        value: function endGame(currentField) {
 
-            if (this._previous_field.length !== current_field.length || this._previous_field[0].length !== current_field[0].length) {
-                this._previous_field = current_field;
+            if (this._previousField.length !== currentField.length || this._previousField[0].length !== currentField[0].length) {
+                this._previousField = currentField;
                 return false;
             }
 
-            for (var i = 0; i < this._previous_field.length; i++) {
-                for (var j = 0; j < this._previous_field[0].length; j++) {
-                    if (this._previous_field[i][j].alive !== current_field[i][j].alive) {
-                        this._previous_field = current_field;
+            for (var i = 0; i < this._previousField.length; i++) {
+                for (var j = 0; j < this._previousField[0].length; j++) {
+                    if (this._previousField[i][j].alive !== currentField[i][j].alive) {
+                        this._previousField = currentField;
 
                         return false;
                     }
@@ -10424,60 +10424,60 @@ var Controller = (function () {
             }return true;
         }
     }, {
-        key: 'Start_game',
-        value: function Start_game() {
+        key: 'startGame',
+        value: function startGame() {
 
             var _this = this;
 
             if (_this._pause) {
                 _this._pause = false;
 
-                _this._GameTimer = setTimeout(function tick() {
+                _this._gameTimer = setTimeout(function tick() {
 
-                    var field = _this._model.UpdateCells();
+                    var field = _this._model.updateCells();
 
-                    if (_this.End_game(field)) {
+                    if (_this.endGame(field)) {
                         _this._pause = true;
-                        _this._view.EndGame();
+                        _this._view.endGame();
                         return;
                     }
 
-                    _this._view.ReDraw(field);
+                    _this._view.reDraw(field);
 
-                    _this._GameTimer = setTimeout(tick, 300);
+                    _this._gameTimer = setTimeout(tick, 300);
                 }, 300);
             }
         }
     }, {
-        key: 'Pause_click',
-        value: function Pause_click() {
+        key: 'pauseClick',
+        value: function pauseClick() {
 
             this._pause = true;
-            clearTimeout(this._GameTimer);
+            clearTimeout(this._gameTimer);
         }
     }, {
-        key: 'Field_click',
-        value: function Field_click(coordinates) {
+        key: 'fieldClick',
+        value: function fieldClick(coordinates) {
 
             if (this._pause) {
 
-                this._model.ChangeCell(coordinates.x, coordinates.y);
-                this._view.ReDraw(this._model.GetCells());
+                this._model.changeCell(coordinates.x, coordinates.y);
+                this._view.reDraw(this._model.getCells());
             }
         }
     }, {
-        key: 'Change_width',
-        value: function Change_width(width) {
+        key: 'changeWidth',
+        value: function changeWidth(width) {
 
-            this._model.ChangeWidth(width);
-            this._view.ReDraw(this._model.GetCells());
+            this._model.changeWidth(width);
+            this._view.reDraw(this._model.getCells());
         }
     }, {
-        key: 'Change_height',
-        value: function Change_height(height) {
+        key: 'changeHeight',
+        value: function changeHeight(height) {
 
-            this._model.ChangeHeight(height);
-            this._view.ReDraw(this._model.GetCells());
+            this._model.changeHeight(height);
+            this._view.reDraw(this._model.getCells());
         }
     }]);
 
@@ -10526,22 +10526,22 @@ var View = (function () {
 
         var controls = $('<section/>').addClass('controls');
 
-        this.button_start = $('<button>Старт</button>').addClass('controls__btn-start').click('click.button_start', function () {
-            return _this2.events.emit('Start_game');
+        this.buttonStart = $('<button>Старт</button>').addClass('controls__btn-start').click('click.buttonStart', function () {
+            return _this2.events.emit('startGame');
         });
 
-        this.button_pause = $('<button>Пауза</button>').addClass('controls__btn-pause').on('click.button_pause', function () {
-            return _this2.events.emit('Pause');
+        this.buttonPause = $('<button>Пауза</button>').addClass('controls__btn-pause').on('click.buttonPause', function () {
+            return _this2.events.emit('pause');
         });
 
-        var controls__width = $('<div/>').addClass('controls__width');
+        var controlsWidth = $('<div/>').addClass('controls__width');
 
-        this.input_width = $('<input/>').attr({ id: 'controls__width-input', type: 'number', min: '1' }).val(width).on('blur.input_width', function () {
+        this.inputWidth = $('<input/>').attr({ id: 'controls__width-input', type: 'number', min: '1' }).val(width).on('blur.inputWidth', function () {
 
             _this._width = this.value;
-            _this._canvas.width = _this._width * _this.cell_size;
-            _this.events.emit('Change_Width', this.value);
-        }).on('keyup.input_width', function (e) {
+            _this._canvas.width = _this._width * _this.cellSize;
+            _this.events.emit('changeWidth', this.value);
+        }).on('keyup.inputWidth', function (e) {
 
             if (this.value < 1) this.value = 1;
 
@@ -10550,16 +10550,16 @@ var View = (function () {
             $(this).focus();
         });
 
-        controls__width.append($('<span>Ширина: </span>'), this.input_width);
+        controlsWidth.append($('<span>Ширина: </span>'), this.inputWidth);
 
-        var controls__height = $('<div/>').addClass('controls__height');
+        var controlsHeight = $('<div/>').addClass('controls__height');
 
-        this.input_height = $('<input/>').attr({ id: 'controls__height-input', type: 'number', min: '1' }).val(height).on('blur.input_height', function () {
+        this.inputHeight = $('<input/>').attr({ id: 'controls__height-input', type: 'number', min: '1' }).val(height).on('blur.inputHeight', function () {
 
             _this._height = this.value;
-            _this._canvas.height = _this._height * _this.cell_size;
-            _this.events.emit('Change_Height', this.value);
-        }).on('keyup.input_height', function (e) {
+            _this._canvas.height = _this._height * _this.cellSize;
+            _this.events.emit('changeHeight', this.value);
+        }).on('keyup.inputHeight', function (e) {
 
             if (this.value < 1) this.value = 1;
 
@@ -10568,9 +10568,9 @@ var View = (function () {
             $(this).focus();
         });
 
-        controls__height.append($('<span>Высота: </span>'), this.input_height);
+        controlsHeight.append($('<span>Высота: </span>'), this.inputHeight);
 
-        controls.append(this.button_start, this.button_pause, controls__width, controls__height);
+        controls.append(this.buttonStart, this.buttonPause, controlsWidth, controlsHeight);
 
         container.append(controls);
 
@@ -10584,10 +10584,10 @@ var View = (function () {
 
         $('body').append(container);
 
-        this.cell_size = parseFloat(field.css('font-size'));
+        this.cellSize = parseFloat(field.css('font-size'));
 
-        this._canvas.width = this._width * this.cell_size;
-        this._canvas.height = this._height * this.cell_size;
+        this._canvas.width = this._width * this.cellSize;
+        this._canvas.height = this._height * this.cellSize;
 
         this._ctx = this._canvas.getContext('2d');
 
@@ -10595,37 +10595,35 @@ var View = (function () {
 
         for (var i = 0; i < this._width; i++) {
             for (var j = 0; j < this._height; j++) {
-                this._ctx.strokeRect(i * this.cell_size, j * this.cell_size, this.cell_size, this.cell_size);
+                this._ctx.strokeRect(i * this.cellSize, j * this.cellSize, this.cellSize, this.cellSize);
             }
         }$(this._canvas).click(function (e) {
-
-            console.log(parseInt(e.offsetX / _this2.cell_size));
-
-            _this2.events.emit('Field_Click', { x: parseInt(e.offsetX / _this2.cell_size), y: parseInt(e.offsetY / _this2.cell_size) });
+            return _this2.events.emit('fieldClick', { x: parseInt(e.offsetX / _this2.cellSize),
+                y: parseInt(e.offsetY / _this2.cellSize) });
         });
     }
 
     _createClass(View, [{
-        key: 'ReDraw',
-        value: function ReDraw(field) {
+        key: 'reDraw',
+        value: function reDraw(field) {
             var _this3 = this;
 
-            this._canvas.width = this._width * this.cell_size;
-            this._canvas.height = this._height * this.cell_size;
+            this._canvas.width = this._width * this.cellSize;
+            this._canvas.height = this._height * this.cellSize;
 
             field.forEach(function (line, x) {
 
                 line.forEach(function (cell, y) {
 
-                    _this3._ctx.clearRect(x * _this3.cell_size, y * _this3.cell_size, _this3.cell_size, _this3.cell_size);
+                    _this3._ctx.clearRect(x * _this3.cellSize, y * _this3.cellSize, _this3.cellSize, _this3.cellSize);
 
-                    if (cell.alive) _this3._ctx.fillRect(x * _this3.cell_size, y * _this3.cell_size, _this3.cell_size, _this3.cell_size);else _this3._ctx.strokeRect(x * _this3.cell_size, y * _this3.cell_size, _this3.cell_size, _this3.cell_size);
+                    if (cell.alive) _this3._ctx.fillRect(x * _this3.cellSize, y * _this3.cellSize, _this3.cellSize, _this3.cellSize);else _this3._ctx.strokeRect(x * _this3.cellSize, y * _this3.cellSize, _this3.cellSize, _this3.cellSize);
                 });
             });
         }
     }, {
-        key: 'EndGame',
-        value: function EndGame() {
+        key: 'endGame',
+        value: function endGame() {
 
             alert('Игра завершена!');
         }
@@ -11331,32 +11329,32 @@ var Model = (function () {
     }
 
     _createClass(Model, [{
-        key: 'GetCells',
-        value: function GetCells() {
+        key: 'getCells',
+        value: function getCells() {
 
             return JSON.parse(JSON.stringify(this._Cells));
         }
     }, {
-        key: 'KillCell',
-        value: function KillCell(x, y) {
+        key: 'killCell',
+        value: function killCell(x, y) {
 
             this._Cells[x][y].alive = false;
         }
     }, {
-        key: 'RestoreCell',
-        value: function RestoreCell(x, y) {
+        key: 'restoreCell',
+        value: function restoreCell(x, y) {
 
             this._Cells[x][y].alive = true;
         }
     }, {
-        key: 'ChangeCell',
-        value: function ChangeCell(x, y) {
+        key: 'changeCell',
+        value: function changeCell(x, y) {
 
-            this._Cells[x][y].alive ? this.KillCell(x, y) : this.RestoreCell(x, y);
+            this._Cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y);
         }
     }, {
-        key: 'CountNeighbors',
-        value: function CountNeighbors(x, y) {
+        key: 'countNeighbors',
+        value: function countNeighbors(x, y) {
 
             var neighbors = 0;
 
@@ -11379,15 +11377,15 @@ var Model = (function () {
             return neighbors;
         }
     }, {
-        key: 'UpdateCells',
-        value: function UpdateCells() {
+        key: 'updateCells',
+        value: function updateCells() {
             var _this = this;
 
             var _cells = this._Cells.map(function (line, x) {
 
                 return line.map(function (cell, y) {
 
-                    var neighbors = _this.CountNeighbors(x, y);
+                    var neighbors = _this.countNeighbors(x, y);
 
                     if (neighbors === 3) return true;
 
@@ -11404,8 +11402,8 @@ var Model = (function () {
             }return JSON.parse(JSON.stringify(this._Cells));
         }
     }, {
-        key: 'ChangeWidth',
-        value: function ChangeWidth(x) {
+        key: 'changeWidth',
+        value: function changeWidth(x) {
 
             var _cells = [];
 
@@ -11424,8 +11422,8 @@ var Model = (function () {
             this._Cells = _cells;
         }
     }, {
-        key: 'ChangeHeight',
-        value: function ChangeHeight(y) {
+        key: 'changeHeight',
+        value: function changeHeight(y) {
 
             var _cells = [];
 

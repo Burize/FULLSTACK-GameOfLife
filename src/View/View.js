@@ -17,25 +17,25 @@ export default class View{
         
         let controls = $('<section/>').addClass('controls');
         
-        this.button_start = $('<button>Старт</button>')
+        this.buttonStart = $('<button>Старт</button>')
             .addClass('controls__btn-start')
-            .click( 'click.button_start', () => this.events.emit('Start_game') );
+            .click( 'click.buttonStart', () => this.events.emit('startGame') );
         
-        this.button_pause = $('<button>Пауза</button>')
+        this.buttonPause = $('<button>Пауза</button>')
             .addClass('controls__btn-pause')
-            .on( 'click.button_pause', () => this.events.emit('Pause') );
+            .on( 'click.buttonPause', () => this.events.emit('pause') );
 
-        let controls__width = $('<div/>').addClass('controls__width');
+        let controlsWidth = $('<div/>').addClass('controls__width');
         
-        this.input_width = $('<input/>')
+        this.inputWidth = $('<input/>')
             .attr({id: 'controls__width-input', type: 'number', min: '1'}).val(width)
-            .on('blur.input_width', function(){ 
+            .on('blur.inputWidth', function(){ 
 
                 _this._width = this.value;
-                _this._canvas.width = _this._width * _this.cell_size ; 
-                _this.events.emit('Change_Width',this.value);
+                _this._canvas.width = _this._width * _this.cellSize ; 
+                _this.events.emit('changeWidth',this.value);
             })
-            .on('keyup.input_width', function (e) {
+            .on('keyup.inputWidth', function (e) {
             
                 if(this.value < 1) this.value = 1;
 
@@ -45,19 +45,19 @@ export default class View{
                 $(this).focus();
             });
         
-        controls__width.append($('<span>Ширина: </span>'), this.input_width);
+        controlsWidth.append($('<span>Ширина: </span>'), this.inputWidth);
 
-        let controls__height = $('<div/>').addClass('controls__height');
+        let controlsHeight = $('<div/>').addClass('controls__height');
         
-        this.input_height = $('<input/>')
+        this.inputHeight = $('<input/>')
             .attr({id: 'controls__height-input', type: 'number', min: '1'}).val(height)
-            .on('blur.input_height', function(){ 
+            .on('blur.inputHeight', function(){ 
 
                 _this._height = this.value;
-                _this._canvas.height = _this._height * _this.cell_size ; 
-                _this.events.emit('Change_Height',this.value);
+                _this._canvas.height = _this._height * _this.cellSize ; 
+                _this.events.emit('changeHeight',this.value);
             })
-            .on('keyup.input_height', function (e) {
+            .on('keyup.inputHeight', function (e) {
 
                 if(this.value < 1) this.value = 1;
 
@@ -67,9 +67,9 @@ export default class View{
                 $(this).focus();
             });
         
-        controls__height.append($('<span>Высота: </span>'), this.input_height);
+        controlsHeight.append($('<span>Высота: </span>'), this.inputHeight);
 
-        controls.append(this.button_start, this.button_pause, controls__width, controls__height);
+        controls.append(this.buttonStart, this.buttonPause, controlsWidth, controlsHeight);
 
         container.append(controls);
 
@@ -84,10 +84,10 @@ export default class View{
         $('body').append(container);
         
         
-        this.cell_size = parseFloat( field.css('font-size') ); 
+        this.cellSize = parseFloat( field.css('font-size') ); 
         
-        this._canvas.width = this._width * this.cell_size ; 
-        this._canvas.height = this._height * this.cell_size ; 
+        this._canvas.width = this._width * this.cellSize ; 
+        this._canvas.height = this._height * this.cellSize ; 
         
         this._ctx = this._canvas.getContext('2d');
          
@@ -95,42 +95,36 @@ export default class View{
         
         for(let i=0; i < this._width; i++ )
             for(let j=0; j < this._height; j++)
-                this._ctx.strokeRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size)
+                this._ctx.strokeRect(i * this.cellSize, j * this.cellSize,  this.cellSize,  this.cellSize)
        
-        $(this._canvas).click((e) => {
-            
-            console.log(parseInt( e.offsetX / this.cell_size));
-            
-            this.events.emit('Field_Click', {x: parseInt( e.offsetX / this.cell_size), y: parseInt( e.offsetY / this.cell_size)});
-            
-            
-        });
+        $(this._canvas).click((e) =>  this.events.emit('fieldClick', {x: parseInt( e.offsetX / this.cellSize), 
+                                                                      y: parseInt( e.offsetY / this.cellSize)}));
         
         
     }
 
     
-    ReDraw(field){
+    reDraw(field){
        
-        this._canvas.width = this._width * this.cell_size ; 
-        this._canvas.height = this._height * this.cell_size ; 
+        this._canvas.width = this._width * this.cellSize ; 
+        this._canvas.height = this._height * this.cellSize ; 
         
          field.forEach((line, x)=>{
              
              line.forEach( (cell, y)=> {
                  
-                 this._ctx.clearRect(x * this.cell_size, y * this.cell_size,  this.cell_size,  this.cell_size)
+                 this._ctx.clearRect(x * this.cellSize, y * this.cellSize,  this.cellSize,  this.cellSize)
                     
                     if(cell.alive)
-                        this._ctx.fillRect(x * this.cell_size, y * this.cell_size,  this.cell_size,  this.cell_size)
+                        this._ctx.fillRect(x * this.cellSize, y * this.cellSize,  this.cellSize,  this.cellSize)
                     else
-                        this._ctx.strokeRect(x * this.cell_size, y * this.cell_size,  this.cell_size,  this.cell_size) 
+                        this._ctx.strokeRect(x * this.cellSize, y * this.cellSize,  this.cellSize,  this.cellSize) 
              });
          });
   
     }
     
-    EndGame(){
+    endGame(){
         
         alert('Игра завершена!');
     }
