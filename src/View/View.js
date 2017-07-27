@@ -7,72 +7,87 @@ export default class View{
     
     constructor( width, height){
         
-        var _this = this; 
+        let _this = this; 
         this._width =  width;
         this._height = height;
         
         this.events = new EventEmitter();
         
-        var container = $('<article/>').addClass('container');
+        let container = $('<article/>').addClass('container');
         
-        var controls = $('<section/>').addClass('controls');
-        this.button_start = $('<button>Старт</button>').addClass('btn_start')
-        .click(function(){
-             _this.events.emit('Start_game');                                                                         
-        });
-        this.button_pause = $('<button>Пауза</button>').attr('id','btn_pause')
-        .click(function(){
-             _this.events.emit('Pause');                                                                         
-        });
+        let controls = $('<section/>').addClass('controls');
+        
+        this.buttonStart = $('<button>Старт</button>')
+            .addClass('controls__btn-start')
+            .click( 'click.buttonStart', () => this.events.emit('startGame') );
+        
+        this.buttonPause = $('<button>Пауза</button>')
+            .addClass('controls__btn-pause')
+            .on( 'click.buttonPause', () => this.events.emit('pause') );
 
-        var controls__width = $('<div/>').addClass('controls__width');
-        this.input_width = $('<input/>').attr({id: 'controls__width-input', type: 'number', min: '1'}).val(width)
-        .blur( function(){ 
+        let controlsWidth = $('<div/>').addClass('controls__width');
+        
+        this.inputWidth = $('<input/>')
+            .attr({id: 'controls__width-input', type: 'number', min: '1'}).val(width)
+            .on('blur.inputWidth', function(){ 
+
+                _this._width = this.value;
+                _this._canvas.width = _this._width * _this.cellSize ; 
+                _this.events.emit('changeWidth',this.value);
+            })
+            .on('keyup.inputWidth', function (e) {
             
-            _this._width = this.value;
-            _this._canvas.width = _this._width * _this.cell_size ; 
-            _this.events.emit('Change_Width',this.value);
-        }).on('keyup', function (e) {
-            if (e.keyCode == 13) {
-               this.blur();
-            }
-        });
-        
-        controls__width.append($('<span>Ширина: </span>'), this.input_width);
+                if(this.value < 1) this.value = 1;
 
-        var controls__height = $('<div/>').addClass('controls__height');
-        this.input_height = $('<input/>').attr({id: 'controls__height-input', type: 'number', min: '1'}).val(height)
-        .blur( function(){ 
-            
-            _this._height = this.value;
-            _this._canvas.height = _this._height * _this.cell_size ; 
-            _this.events.emit('Change_Height',this.value);
-        }).
-        on('keyup', function (e) {
-            if (e.keyCode == 13) {
-               this.blur();
-            }
-        });
+                if(e.keyCode == 13) this.blur();
+            })
+            .on("click.mozillaSpecial", function(){
+                $(this).focus();
+            });
         
-        controls__height.append($('<span>Высота: </span>'), this.input_height);
+        controlsWidth.append($('<span>Ширина: </span>'), this.inputWidth);
 
-        controls.append(this.button_start, this.button_pause, controls__width, controls__height);
+        let controlsHeight = $('<div/>').addClass('controls__height');
+        
+        this.inputHeight = $('<input/>')
+            .attr({id: 'controls__height-input', type: 'number', min: '1'}).val(height)
+            .on('blur.inputHeight', function(){ 
+
+                _this._height = this.value;
+                _this._canvas.height = _this._height * _this.cellSize ; 
+                _this.events.emit('changeHeight',this.value);
+            })
+            .on('keyup.inputHeight', function (e) {
+
+                if(this.value < 1) this.value = 1;
+
+                if(e.keyCode == 13) this.blur();
+            })
+            .on("click.mozillaSpecial", function(){
+                $(this).focus();
+            });
+        
+        controlsHeight.append($('<span>Высота: </span>'), this.inputHeight);
+
+        controls.append(this.buttonStart, this.buttonPause, controlsWidth, controlsHeight);
 
         container.append(controls);
 
-        var field = $('<section/>').addClass('field');
+        let field = $('<section/>').addClass('field');
+        
         this._canvas = document.createElement('canvas');
         this._canvas.className = 'field__canvas';
+        
         field.append(this._canvas);
         container.append(field);
 
         $('body').append(container);
         
         
-        this.cell_size = parseFloat( field.css('font-size') ); 
+        this.cellSize = parseFloat( field.css('font-size') ); 
         
-        this._canvas.width = this._width * this.cell_size ; 
-        this._canvas.height = this._height * this.cell_size ; 
+        this._canvas.width = this._width * this.cellSize ; 
+        this._canvas.height = this._height * this.cellSize ; 
         
         this._ctx = this._canvas.getContext('2d');
          
@@ -80,35 +95,36 @@ export default class View{
         
         for(let i=0; i < this._width; i++ )
             for(let j=0; j < this._height; j++)
-                this._ctx.strokeRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size)
+                this._ctx.strokeRect(i * this.cellSize, j * this.cellSize,  this.cellSize,  this.cellSize)
        
-        $(this._canvas).click(function(e){
-            
-        
-            _this.events.emit('Field_Click', {x: parseInt( e.offsetX / _this.cell_size), y: parseInt( e.offsetY / _this.cell_size)});
-        });
+        $(this._canvas).click((e) =>  this.events.emit('fieldClick', {x: parseInt( e.offsetX / this.cellSize), 
+                                                                      y: parseInt( e.offsetY / this.cellSize)}));
         
         
     }
 
-    ReDraw(field){
+    
+    reDraw(field){
        
-        this._canvas.width = this._width * this.cell_size ; 
-        this._canvas.height = this._height * this.cell_size ; 
+        this._canvas.width = this._width * this.cellSize ; 
+        this._canvas.height = this._height * this.cellSize ; 
         
-        for(let i=0; i < field.length; i++ )
-            for(let j=0; j < field[0].length; j++)
-                {
-                    this._ctx.clearRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size)
+         field.forEach((line, x)=>{
+             
+             line.forEach( (cell, y)=> {
+                 
+                 this._ctx.clearRect(x * this.cellSize, y * this.cellSize,  this.cellSize,  this.cellSize)
                     
-                   if(field[i][j].alive)
-                    this._ctx.fillRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size)
-                else
-                    this._ctx.strokeRect(i * this.cell_size, j * this.cell_size,  this.cell_size,  this.cell_size) 
-                }  
+                    if(cell.alive)
+                        this._ctx.fillRect(x * this.cellSize, y * this.cellSize,  this.cellSize,  this.cellSize)
+                    else
+                        this._ctx.strokeRect(x * this.cellSize, y * this.cellSize,  this.cellSize,  this.cellSize) 
+             });
+         });
+  
     }
     
-    EndGame(){
+    endGame(){
         
         alert('Игра завершена!');
     }

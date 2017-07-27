@@ -7,8 +7,8 @@ describe('View', function(){
     
     
     var canvas = document.createElement('canvas');
-    canvas.width = view._width * view.cell_size ; 
-    canvas.height = view._height * view.cell_size ; 
+    canvas.width = view._width * view.cellSize ; 
+    canvas.height = view._height * view.cellSize ; 
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = 'black';
     
@@ -19,7 +19,7 @@ describe('View', function(){
             
             for(let i=0; i < view._width; i++ )
             for(let j=0; j < view._height; j++)
-                ctx.strokeRect(i * view.cell_size, j * view.cell_size,  view.cell_size,  view.cell_size)
+                ctx.strokeRect(i * view.cellSize, j * view.cellSize,  view.cellSize,  view.cellSize)
                 
          assert.equal(ctx.hash(), view._ctx.hash() ); 
             
@@ -44,17 +44,17 @@ describe('View', function(){
 
             newField[2][3].alive = true;
 
-            view.ReDraw(newField);
+            view.reDraw(newField);
 
             for(let i=0; i < newField.length; i++ )
                 for(let j=0; j < newField[0].length; j++)
                     {
-                        ctx.clearRect(i * view.cell_size, j * view.cell_size,  view.cell_size,  view.cell_size)
+                        ctx.clearRect(i * view.cellSize, j * view.cellSize,  view.cellSize,  view.cellSize)
 
                        if(newField[i][j].alive)
-                        ctx.fillRect(i * view.cell_size, j * view.cell_size,  view.cell_size,  view.cell_size)
+                        ctx.fillRect(i * view.cellSize, j * view.cellSize,  view.cellSize,  view.cellSize)
                     else
-                        ctx.strokeRect(i * view.cell_size, j * view.cell_size,  view.cell_size,  view.cell_size) 
+                        ctx.strokeRect(i * view.cellSize, j * view.cellSize,  view.cellSize,  view.cellSize) 
                     }  
 
 
@@ -67,7 +67,7 @@ describe('View', function(){
         
             view._width = 7;
 
-            canvas.width = view._width * view.cell_size ; 
+            canvas.width = view._width * view.cellSize ; 
 
              var newField = []
 
@@ -81,17 +81,17 @@ describe('View', function(){
 
             newField[6][3].alive = true;
 
-            view.ReDraw(newField);
+            view.reDraw(newField);
 
             for(let i=0; i < newField.length; i++ )
                 for(let j=0; j < newField[0].length; j++)
                     {
-                        ctx.clearRect(i * view.cell_size, j * view.cell_size,  view.cell_size,  view.cell_size)
+                        ctx.clearRect(i * view.cellSize, j * view.cellSize,  view.cellSize,  view.cellSize)
 
                        if(newField[i][j].alive)
-                        ctx.fillRect(i * view.cell_size, j * view.cell_size,  view.cell_size,  view.cell_size)
+                        ctx.fillRect(i * view.cellSize, j * view.cellSize,  view.cellSize,  view.cellSize)
                     else
-                        ctx.strokeRect(i * view.cell_size, j * view.cell_size,  view.cell_size,  view.cell_size) 
+                        ctx.strokeRect(i * view.cellSize, j * view.cellSize,  view.cellSize,  view.cellSize) 
                     }  
 
 

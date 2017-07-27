@@ -6,122 +6,106 @@ export default class Controller{
 
     constructor(x,y){
         
-        var _this = this;
         this._model = new Model(x,y);
         
-        this._GameTimer;
+        this._gameTimer;
     
         this._pause = true;
     
-        this._previous_field = [[],[]];
+        this._previousField = [[],[]];
         
         this._view = new View(x, y);
         
-        this._view.events.subscribe('Start_game', function(){
-          _this.Start_game.call(_this);  
-        } );
+        this._view.events.subscribe('startGame', () => this.startGame.call(this) );
         
-        this._view.events.subscribe('Pause', function(){
-          _this.Pause_click.call(_this);  
-        } );
+        this._view.events.subscribe('pause', () => this.pauseClick.call(this) );
         
-        this._view.events.subscribe('Field_Click', function(coordinates){
-          _this.Field_click.call(_this, coordinates);  
-        } );
+        this._view.events.subscribe('fieldClick', (coordinates) => this.fieldClick.call(this, coordinates) );
         
-        this._view.events.subscribe('Change_Width', function(width){
-          _this.Change_width.call(_this, width);  
-        } );
+        this._view.events.subscribe('changeWidth', (width) => this.changeWidth.call(this, width) );
         
-        this._view.events.subscribe('Change_Height', function(height){
-          _this.Change_height.call(_this, height);  
-        } );
+        this._view.events.subscribe('changeHeight', (height) => this.changeHeight.call(this, height) );
     }
     
-    End_game(current_field){
+    endGame(currentField){
         
-        if(this._previous_field.length !== current_field.length || this._previous_field[0].length !== current_field[0].length)
+        if(this._previousField.length !== currentField.length || this._previousField[0].length !== currentField[0].length)
             {
-                this._previous_field = current_field; 
+                this._previousField = currentField; 
                 return false;
             }
 
         
-        for(let i=0; i < this._previous_field.length; i++ )
-            for(let j=0; j < this._previous_field[0].length; j++)
+        for(let i=0; i < this._previousField.length; i++ )
+            for(let j=0; j < this._previousField[0].length; j++)
                 {
-                    if(this._previous_field[i][j].alive !== current_field[i][j].alive)
+                    if(this._previousField[i][j].alive !== currentField[i][j].alive)
                         {
-                            this._previous_field = current_field; 
+                            this._previousField = currentField; 
                             
                             return false;
-                        }
-                
+                        } 
                 }
    
         return true;
     }
      
-    Start_game(){
+    startGame(){
        
-        var _this = this;
+        let _this = this;
         
         if(_this._pause)
             {
-                _this._pause = false;
+               _this._pause = false;
                 
-               _this._GameTimer = setTimeout(function tick() {
+               _this._gameTimer = setTimeout(function tick() {
         
                   
-                var field = _this._model.UpdateCells()
+                var field = _this._model.updateCells()
         
-                if(_this.End_game(field))
+                if(_this.endGame(field))
                     {  
-                        _this._pause=true;
-                        _this._view.EndGame();
+                        _this._pause = true;
+                        _this._view.endGame();
                         return;
                     }
                    
-                _this._view.ReDraw( field );
-                   
-                   
-                   
-                _this._GameTimer = setTimeout(tick, 300);
+                _this._view.reDraw( field );
+       
+                _this._gameTimer = setTimeout(tick, 300);
 
                 }, 300); 
             }
         
-        
     }
     
-    Pause_click(){
+    pauseClick(){
         
         this._pause = true;
-        clearTimeout( this._GameTimer );
+        clearTimeout( this._gameTimer );
     }
     
-    Field_click(coordinates){
+    fieldClick(coordinates){
         
         if(this._pause)
         {
 
-            this._model.ChangeCell(coordinates.x,coordinates.y);
-            this._view.ReDraw(this._model.GetCells());    
+            this._model.changeCell(coordinates.x,coordinates.y);
+            this._view.reDraw(this._model.getCells());    
         }
         
     }
     
-    Change_width(width){
+    changeWidth(width){
         
-        this._model.ChangeSize(width, null);
-        this._view.ReDraw( this._model.GetCells() );
-     
+        this._model.changeWidth(width);
+        this._view.reDraw( this._model.getCells() );
     }
     
-    Change_height(height){
+    changeHeight(height){
         
-        this._model.ChangeSize(null, height);
-        this._view.ReDraw( this._model.GetCells() );
+        this._model.changeHeight(height);
+        this._view.reDraw( this._model.getCells() );
     }
     
 }
