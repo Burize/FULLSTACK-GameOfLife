@@ -10325,316 +10325,246 @@ return jQuery;
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Controller_Controller_js__ = __webpack_require__(2);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var _ControllerControllerJs = __webpack_require__(2);
 
-var _ControllerControllerJs2 = _interopRequireDefault(_ControllerControllerJs);
-
-$(function () {
-
-    var _GameOfLife = new _ControllerControllerJs2['default'](20, 20);
+$(() => {
+  const _GameOfLife = new __WEBPACK_IMPORTED_MODULE_0__Controller_Controller_js__["a" /* default */](20, 20);
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__View_view_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Model_model_js__ = __webpack_require__(13);
 
 
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+class Controller {
+  constructor(x, y) {
+    this._model = new __WEBPACK_IMPORTED_MODULE_1__Model_model_js__["a" /* default */](x, y);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+    this._gameTimer;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+    this._pause = true;
 
-var _ViewViewJs = __webpack_require__(3);
+    this._previousField = [[], []];
 
-var _ViewViewJs2 = _interopRequireDefault(_ViewViewJs);
+    this._view = new __WEBPACK_IMPORTED_MODULE_0__View_view_js__["a" /* default */](x, y);
 
-var _ModelModelJs = __webpack_require__(13);
+    this._view.events.subscribe('startGame', () => this.startGame.call(this));
 
-var _ModelModelJs2 = _interopRequireDefault(_ModelModelJs);
+    this._view.events.subscribe('pause', () => this.pauseClick.call(this));
 
-var Controller = (function () {
-    function Controller(x, y) {
-        var _this2 = this;
+    this._view.events.subscribe('fieldClick', coordinates => this.fieldClick.call(this, coordinates));
 
-        _classCallCheck(this, Controller);
+    this._view.events.subscribe('changeWidth', width => this.changeWidth.call(this, width));
 
-        this._model = new _ModelModelJs2['default'](x, y);
+    this._view.events.subscribe('changeHeight', height => this.changeHeight.call(this, height));
+  }
 
-        this._gameTimer;
-
-        this._pause = true;
-
-        this._previousField = [[], []];
-
-        this._view = new _ViewViewJs2['default'](x, y);
-
-        this._view.events.subscribe('startGame', function () {
-            return _this2.startGame.call(_this2);
-        });
-
-        this._view.events.subscribe('pause', function () {
-            return _this2.pauseClick.call(_this2);
-        });
-
-        this._view.events.subscribe('fieldClick', function (coordinates) {
-            return _this2.fieldClick.call(_this2, coordinates);
-        });
-
-        this._view.events.subscribe('changeWidth', function (width) {
-            return _this2.changeWidth.call(_this2, width);
-        });
-
-        this._view.events.subscribe('changeHeight', function (height) {
-            return _this2.changeHeight.call(_this2, height);
-        });
+  endGame(currentField) {
+    if (this._previousField.length !== currentField.length || this._previousField[0].length !== currentField[0].length) {
+      this._previousField = currentField;
+      return false;
     }
 
-    _createClass(Controller, [{
-        key: 'endGame',
-        value: function endGame(currentField) {
 
-            if (this._previousField.length !== currentField.length || this._previousField[0].length !== currentField[0].length) {
-                this._previousField = currentField;
-                return false;
-            }
+    for (let i = 0; i < this._previousField.length; i += 1) {
+      for (let j = 0; j < this._previousField[0].length; j += 1) {
+        if (this._previousField[i][j].alive !== currentField[i][j].alive) {
+          this._previousField = currentField;
 
-            for (var i = 0; i < this._previousField.length; i++) {
-                for (var j = 0; j < this._previousField[0].length; j++) {
-                    if (this._previousField[i][j].alive !== currentField[i][j].alive) {
-                        this._previousField = currentField;
-
-                        return false;
-                    }
-                }
-            }return true;
+          return false;
         }
-    }, {
-        key: 'startGame',
-        value: function startGame() {
+      }
+    }
 
-            var _this = this;
+    return true;
+  }
 
-            if (_this._pause) {
-                _this._pause = false;
+  startGame() {
+    const _this = this;
 
-                _this._gameTimer = setTimeout(function tick() {
+    if (_this._pause) {
+      _this._pause = false;
 
-                    var field = _this._model.updateCells();
+      _this._gameTimer = setTimeout(function tick() {
+        const field = _this._model.updateCells();
 
-                    if (_this.endGame(field)) {
-                        _this._pause = true;
-                        _this._view.endGame();
-                        return;
-                    }
-
-                    _this._view.reDraw(field);
-
-                    _this._gameTimer = setTimeout(tick, 300);
-                }, 300);
-            }
+        if (_this.endGame(field)) {
+          _this._pause = true;
+          _this._view.endGame();
+          return;
         }
-    }, {
-        key: 'pauseClick',
-        value: function pauseClick() {
 
-            this._pause = true;
-            clearTimeout(this._gameTimer);
-        }
-    }, {
-        key: 'fieldClick',
-        value: function fieldClick(coordinates) {
+        _this._view.reDraw(field);
 
-            if (this._pause) {
+        _this._gameTimer = setTimeout(tick, 300);
+      }, 300);
+    }
+  }
 
-                this._model.changeCell(coordinates.x, coordinates.y);
-                this._view.reDraw(this._model.getCells());
-            }
-        }
-    }, {
-        key: 'changeWidth',
-        value: function changeWidth(width) {
+  pauseClick() {
+    this._pause = true;
+    clearTimeout(this._gameTimer);
+  }
 
-            this._model.changeWidth(width);
-            this._view.reDraw(this._model.getCells());
-        }
-    }, {
-        key: 'changeHeight',
-        value: function changeHeight(height) {
+  fieldClick(coordinates) {
+    if (this._pause) {
+      this._model.changeCell(coordinates.x, coordinates.y);
+      this._view.reDraw(this._model.getCells());
+    }
+  }
 
-            this._model.changeHeight(height);
-            this._view.reDraw(this._model.getCells());
-        }
-    }]);
+  changeWidth(width) {
+    this._model.changeWidth(width);
+    this._view.reDraw(this._model.getCells());
+  }
 
-    return Controller;
-})();
+  changeHeight(height) {
+    this._model.changeHeight(height);
+    this._view.reDraw(this._model.getCells());
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Controller;
 
-exports['default'] = Controller;
-module.exports = exports['default'];
+
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__View_styl__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__View_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__View_styl__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__EventEmitter_js__ = __webpack_require__(12);
 
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+class View {
+  constructor(width, height) {
+    const _this = this;
+    this._width = width;
+    this._height = height;
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+    this.events = new __WEBPACK_IMPORTED_MODULE_1__EventEmitter_js__["a" /* default */]();
 
-__webpack_require__(4);
+    const container = $('<article/>').addClass('container');
 
-var _EventEmitterJs = __webpack_require__(12);
+    const controls = $('<section/>').addClass('controls');
 
-var _EventEmitterJs2 = _interopRequireDefault(_EventEmitterJs);
+    this.buttonStart = $('<button>Старт</button>')
+      .addClass('controls__btn-start')
+      .click('click.buttonStart', () => this.events.emit('startGame'));
 
-var View = (function () {
-    function View(width, height) {
-        var _this2 = this;
+    this.buttonPause = $('<button>Пауза</button>')
+      .addClass('controls__btn-pause')
+      .on('click.buttonPause', () => this.events.emit('pause'));
 
-        _classCallCheck(this, View);
+    const controlsWidth = $('<div/>').addClass('controls__width');
 
-        var _this = this;
-        this._width = width;
-        this._height = height;
+    this.inputWidth = $('<input/>')
+      .attr({ id: 'controls__width-input', type: 'number', min: '1' }).val(width)
+      .on('blur.inputWidth', function () {
+        _this._width = this.value;
+        _this._canvas.width = _this._width * _this.cellSize;
+        _this.events.emit('changeWidth', this.value);
+      })
+      .on('keyup.inputWidth', function (e) {
+        if (this.value < 1) this.value = 1;
 
-        this.events = new _EventEmitterJs2['default']();
+        if (e.keyCode === 13) this.blur();
+      })
+      .on('click.mozillaSpecial', function () {
+        $(this).focus();
+      });
 
-        var container = $('<article/>').addClass('container');
+    controlsWidth.append($('<span>Ширина: </span>'), this.inputWidth);
 
-        var controls = $('<section/>').addClass('controls');
+    const controlsHeight = $('<div/>').addClass('controls__height');
 
-        this.buttonStart = $('<button>Старт</button>').addClass('controls__btn-start').click('click.buttonStart', function () {
-            return _this2.events.emit('startGame');
-        });
+    this.inputHeight = $('<input/>')
+      .attr({ id: 'controls__height-input', type: 'number', min: '1' }).val(height)
+      .on('blur.inputHeight', function () {
+        _this._height = this.value;
+        _this._canvas.height = _this._height * _this.cellSize;
+        _this.events.emit('changeHeight', this.value);
+      })
+      .on('keyup.inputHeight', function (e) {
+        if (this.value < 1) this.value = 1;
 
-        this.buttonPause = $('<button>Пауза</button>').addClass('controls__btn-pause').on('click.buttonPause', function () {
-            return _this2.events.emit('pause');
-        });
+        if (e.keyCode === 13) this.blur();
+      })
+      .on('click.mozillaSpecial', function () {
+        $(this).focus();
+      });
 
-        var controlsWidth = $('<div/>').addClass('controls__width');
+    controlsHeight.append($('<span>Высота: </span>'), this.inputHeight);
 
-        this.inputWidth = $('<input/>').attr({ id: 'controls__width-input', type: 'number', min: '1' }).val(width).on('blur.inputWidth', function () {
+    controls.append(this.buttonStart, this.buttonPause, controlsWidth, controlsHeight);
 
-            _this._width = this.value;
-            _this._canvas.width = _this._width * _this.cellSize;
-            _this.events.emit('changeWidth', this.value);
-        }).on('keyup.inputWidth', function (e) {
+    container.append(controls);
 
-            if (this.value < 1) this.value = 1;
+    const field = $('<section/>').addClass('field');
 
-            if (e.keyCode == 13) this.blur();
-        }).on("click.mozillaSpecial", function () {
-            $(this).focus();
-        });
+    this._canvas = document.createElement('canvas');
+    this._canvas.className = 'field__canvas';
 
-        controlsWidth.append($('<span>Ширина: </span>'), this.inputWidth);
+    field.append(this._canvas);
+    container.append(field);
 
-        var controlsHeight = $('<div/>').addClass('controls__height');
+    $('body').append(container);
 
-        this.inputHeight = $('<input/>').attr({ id: 'controls__height-input', type: 'number', min: '1' }).val(height).on('blur.inputHeight', function () {
 
-            _this._height = this.value;
-            _this._canvas.height = _this._height * _this.cellSize;
-            _this.events.emit('changeHeight', this.value);
-        }).on('keyup.inputHeight', function (e) {
+    this.cellSize = parseFloat(field.css('font-size'));
 
-            if (this.value < 1) this.value = 1;
+    this._canvas.width = this._width * this.cellSize;
+    this._canvas.height = this._height * this.cellSize;
 
-            if (e.keyCode == 13) this.blur();
-        }).on("click.mozillaSpecial", function () {
-            $(this).focus();
-        });
+    this._ctx = this._canvas.getContext('2d');
 
-        controlsHeight.append($('<span>Высота: </span>'), this.inputHeight);
+    this._ctx.fillStyle = 'black';
 
-        controls.append(this.buttonStart, this.buttonPause, controlsWidth, controlsHeight);
-
-        container.append(controls);
-
-        var field = $('<section/>').addClass('field');
-
-        this._canvas = document.createElement('canvas');
-        this._canvas.className = 'field__canvas';
-
-        field.append(this._canvas);
-        container.append(field);
-
-        $('body').append(container);
-
-        this.cellSize = parseFloat(field.css('font-size'));
-
-        this._canvas.width = this._width * this.cellSize;
-        this._canvas.height = this._height * this.cellSize;
-
-        this._ctx = this._canvas.getContext('2d');
-
-        this._ctx.fillStyle = 'black';
-
-        for (var i = 0; i < this._width; i++) {
-            for (var j = 0; j < this._height; j++) {
-                this._ctx.strokeRect(i * this.cellSize, j * this.cellSize, this.cellSize, this.cellSize);
-            }
-        }$(this._canvas).click(function (e) {
-            return _this2.events.emit('fieldClick', { x: parseInt(e.offsetX / _this2.cellSize),
-                y: parseInt(e.offsetY / _this2.cellSize) });
-        });
+    for (let i = 0; i < this._width; i += 1) {
+      for (let j = 0; j < this._height; j += 1) { this._ctx.strokeRect(i * this.cellSize, j * this.cellSize, this.cellSize, this.cellSize); }
     }
 
-    _createClass(View, [{
-        key: 'reDraw',
-        value: function reDraw(field) {
-            var _this3 = this;
+    $(this._canvas).click(e => this.events.emit('fieldClick', { x: parseInt(e.offsetX / this.cellSize, 10),
+      y: parseInt(e.offsetY / this.cellSize, 10) }));
+  }
 
-            this._canvas.width = this._width * this.cellSize;
-            this._canvas.height = this._height * this.cellSize;
 
-            field.forEach(function (line, x) {
+  reDraw(field) {
+    this._canvas.width = this._width * this.cellSize;
+    this._canvas.height = this._height * this.cellSize;
 
-                line.forEach(function (cell, y) {
+    field.forEach((line, x) => {
+      line.forEach((cell, y) => {
+        this._ctx.clearRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
 
-                    _this3._ctx.clearRect(x * _this3.cellSize, y * _this3.cellSize, _this3.cellSize, _this3.cellSize);
+        if (cell.alive) { this._ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize); } else { this._ctx.strokeRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize); }
+      });
+    });
+  }
 
-                    if (cell.alive) _this3._ctx.fillRect(x * _this3.cellSize, y * _this3.cellSize, _this3.cellSize, _this3.cellSize);else _this3._ctx.strokeRect(x * _this3.cellSize, y * _this3.cellSize, _this3.cellSize, _this3.cellSize);
-                });
-            });
-        }
-    }, {
-        key: 'endGame',
-        value: function endGame() {
+  endGame() {
+    alert('Игра завершена!');
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = View;
 
-            alert('Игра завершена!');
-        }
-    }]);
 
-    return View;
-})();
-
-exports['default'] = View;
-module.exports = exports['default'];
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
 /* 4 */
@@ -11237,269 +11167,194 @@ module.exports = function (css) {
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var EventEmitter = (function () {
-  function EventEmitter() {
-    _classCallCheck(this, EventEmitter);
-
+class EventEmitter {
+  constructor() {
     this.events = {};
   }
 
-  _createClass(EventEmitter, [{
-    key: "emit",
-    value: function emit(eventName, data) {
-      var event = this.events[eventName];
-      if (event) {
-        event.forEach(function (fn) {
-          fn.call(null, data);
-        });
-      }
+  emit(eventName, data) {
+    const event = this.events[eventName];
+    if (event) {
+      event.forEach((fn) => {
+        fn.call(null, data);
+      });
     }
-  }, {
-    key: "subscribe",
-    value: function subscribe(eventName, fn) {
-      var _this = this;
+  }
 
-      if (!this.events[eventName]) {
-        this.events[eventName] = [];
-      }
-
-      this.events[eventName].push(fn);
-      return function () {
-        _this.events[eventName] = _this.events[eventName].filter(function (eventFn) {
-          return fn !== eventFn;
-        });
-      };
+  subscribe(eventName, fn) {
+    if (!this.events[eventName]) {
+      this.events[eventName] = [];
     }
-  }]);
 
-  return EventEmitter;
-})();
+    this.events[eventName].push(fn);
+    return () => {
+      this.events[eventName] = this.events[eventName].filter(eventFn => fn !== eventFn);
+    };
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = EventEmitter;
 
-exports["default"] = EventEmitter;
-module.exports = exports["default"];
+
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cell_js__ = __webpack_require__(14);
 
-
-Object.defineProperty(exports, '__esModule', {
-    value: true
-});
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var _CellJs = __webpack_require__(14);
-
-var _CellJs2 = _interopRequireDefault(_CellJs);
-
-var Model = (function () {
-    function Model(x, y) {
-        _classCallCheck(this, Model);
-
-        this._Cells = [];
-
-        for (var i = 0; i < x; i++) {
-
-            this._Cells[i] = [];
-
-            for (var j = 0; j < y; j++) {
-                this._Cells[i].push(new _CellJs2['default']());
-            }
-        }
-    }
-
-    _createClass(Model, [{
-        key: 'getCells',
-        value: function getCells() {
-
-            return JSON.parse(JSON.stringify(this._Cells));
-        }
-    }, {
-        key: 'killCell',
-        value: function killCell(x, y) {
-
-            this._Cells[x][y].alive = false;
-        }
-    }, {
-        key: 'restoreCell',
-        value: function restoreCell(x, y) {
-
-            this._Cells[x][y].alive = true;
-        }
-    }, {
-        key: 'changeCell',
-        value: function changeCell(x, y) {
-
-            this._Cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y);
-        }
-    }, {
-        key: 'countNeighbors',
-        value: function countNeighbors(x, y) {
-
-            var neighbors = 0;
-
-            if (x > 0 && y > 0) neighbors += this._Cells[x - 1][y - 1].alive;
-
-            if (x > 0) neighbors += this._Cells[x - 1][y].alive;
-
-            if (x > 0 && y < this._Cells[0].length - 1) neighbors += this._Cells[x - 1][y + 1].alive;
-
-            if (y > 0) neighbors += this._Cells[x][y - 1].alive;
-
-            if (y < this._Cells[0].length - 1) neighbors += this._Cells[x][y + 1].alive;
-
-            if (x < this._Cells.length - 1 && y > 0) neighbors += this._Cells[x + 1][y - 1].alive;
-
-            if (x < this._Cells.length - 1) neighbors += this._Cells[x + 1][y].alive;
-
-            if (x < this._Cells.length - 1 && y < this._Cells[0].length - 1) neighbors += this._Cells[x + 1][y + 1].alive;
-
-            return neighbors;
-        }
-    }, {
-        key: 'updateCells',
-        value: function updateCells() {
-            var _this = this;
-
-            var _cells = this._Cells.map(function (line, x) {
-
-                return line.map(function (cell, y) {
-
-                    var neighbors = _this.countNeighbors(x, y);
-
-                    if (neighbors === 3) return true;
-
-                    if (neighbors === 2 && cell.alive === true) return true;
-
-                    return false;
-                });
-            });
-
-            for (var i = 0; i < this._Cells.length; i++) {
-                for (var j = 0; j < this._Cells[0].length; j++) {
-                    this._Cells[i][j].alive = _cells[i][j];
-                }
-            }return JSON.parse(JSON.stringify(this._Cells));
-        }
-    }, {
-        key: 'changeWidth',
-        value: function changeWidth(x) {
-
-            var _cells = [];
-
-            x = sizeValidate(x);
-
-            for (var i = 0; i < x; i++) {
-
-                _cells[i] = [];
-
-                for (var j = 0; j < this._Cells[0].length; j++) {
-
-                    if (i < this._Cells.length) _cells[i][j] = this._Cells[i][j];else _cells[i][j] = new _CellJs2['default']();
-                }
-            }
-
-            this._Cells = _cells;
-        }
-    }, {
-        key: 'changeHeight',
-        value: function changeHeight(y) {
-
-            var _cells = [];
-
-            y = sizeValidate(y);
-
-            for (var i = 0; i < this._Cells.length; i++) {
-
-                _cells[i] = [];
-
-                for (var j = 0; j < y; j++) {
-
-                    if (j < this._Cells[0].length) _cells[i][j] = this._Cells[i][j];else _cells[i][j] = new _CellJs2['default']();
-                }
-            }
-
-            this._Cells = _cells;
-
-            /* По требованиям нужно стараться работать с методами перебора массивов и не использовать циклов. 
-            Был такой вариант реализации, но на мой взгляд он менее читабельный и не быстрее чем с циклами. 
-            Причем для функции изменения ширины нужно будет дописать еще пару действий для этого варианта. 
-            Поэтому решил оставить как было с циклами.
-            
-                if(y < this._Cells[0].length)
-                {
-                    
-                    this._Cells.forEach((line) => line.splice(y, Number.MAX_VALUE) );
-                }    
-            else
-                {
-                 
-                    let amount = y - this._Cells[0].length;
-                    let newCells = []
-                      for(let i = 0; i< amount; i++)
-                        newCells.push(new Cell() ); 
-                    
-                    this._Cells = this._Cells.map((line) => line = line.concat(JSON.parse(JSON.stringify(newCells))) );
-                }
-                
-                */
-        }
-    }]);
-
-    return Model;
-})();
-
-exports['default'] = Model;
 
 function sizeValidate(size) {
-
-    if (!isNaN(parseInt(size)) && isFinite(size) && size > 0) return size;else return 1;
+  if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
+  return 1;
 }
-module.exports = exports['default'];
+
+class Model {
+  constructor(x, y) {
+    this._cells = [];
+
+    for (let i = 0; i < x; i += 1) {
+      this._cells[i] = [];
+
+      for (let j = 0; j < y; j += 1) { this._cells[i].push(new __WEBPACK_IMPORTED_MODULE_0__Cell_js__["a" /* default */]()); }
+    }
+  }
+
+
+  getCells() {
+    return JSON.parse(JSON.stringify(this._cells));
+  }
+
+  killCell(x, y) {
+    this._cells[x][y].alive = false;
+  }
+
+  restoreCell(x, y) {
+    this._cells[x][y].alive = true;
+  }
+
+  changeCell(x, y) {
+    this._cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y);
+  }
+
+  countNeighbors(x, y) {
+    let neighbors = 0;
+
+    if (x > 0 && y > 0) { neighbors += this._cells[x - 1][y - 1].alive; }
+
+    if (x > 0) { neighbors += this._cells[x - 1][y].alive; }
+
+    if (x > 0 && y < this._cells[0].length - 1) { neighbors += this._cells[x - 1][y + 1].alive; }
+
+    if (y > 0) { neighbors += this._cells[x][y - 1].alive; }
+
+    if (y < this._cells[0].length - 1) { neighbors += this._cells[x][y + 1].alive; }
+
+    if (x < this._cells.length - 1 && y > 0) { neighbors += this._cells[x + 1][y - 1].alive; }
+
+    if (x < this._cells.length - 1) { neighbors += this._cells[x + 1][y].alive; }
+
+    if (x < this._cells.length - 1 && y < this._cells[0].length - 1) { neighbors += this._cells[x + 1][y + 1].alive; }
+
+    return neighbors;
+  }
+
+  updateCells() {
+    const cells = this._cells.map((line, x) => line.map((cell, y) => {
+      const neighbors = this.countNeighbors(x, y);
+
+      if (neighbors === 3) return true;
+
+      if (neighbors === 2 && cell.alive === true) return true;
+
+      return false;
+    }));
+
+
+    for (let i = 0; i < this._cells.length; i += 1) {
+      for (let j = 0; j < this._cells[0].length; j += 1) { this._cells[i][j].alive = cells[i][j]; }
+    }
+
+    return JSON.parse(JSON.stringify(this._cells));
+  }
+
+  changeWidth(_x) {
+    const cells = [];
+
+    const x = sizeValidate(_x);
+
+    for (let i = 0; i < x; i += 1) {
+      cells[i] = [];
+
+      for (let j = 0; j < this._cells[0].length; j += 1) {
+        if (i < this._cells.length) { cells[i][j] = this._cells[i][j]; } else { cells[i][j] = new __WEBPACK_IMPORTED_MODULE_0__Cell_js__["a" /* default */](); }
+      }
+    }
+
+    this._cells = cells;
+  }
+
+  changeHeight(_y) {
+    const cells = [];
+
+    const y = sizeValidate(_y);
+
+    for (let i = 0; i < this._cells.length; i += 1) {
+      cells[i] = [];
+
+      for (let j = 0; j < y; j += 1) {
+        if (j < this._cells[0].length) { cells[i][j] = this._cells[i][j]; } else { cells[i][j] = new __WEBPACK_IMPORTED_MODULE_0__Cell_js__["a" /* default */](); }
+      }
+    }
+
+    this._cells = cells;
+
+
+    /* По требованиям нужно стараться работать с методами перебора массивов и не использовать циклов. 
+        Был такой вариант реализации, но на мой взгляд он менее читабельный и не быстрее чем с циклами. 
+        Причем для функции изменения ширины нужно будет дописать еще пару действий для этого варианта. 
+        Поэтому решил оставить как было с циклами.
+        
+            if(y < this._cells[0].length)
+            {
+                
+                this._cells.forEach((line) => line.splice(y, Number.MAX_VALUE) );
+            }    
+        else
+            {
+             
+                let amount = y - this._cells[0].length;
+                let newCells = []
+                for(let i = 0; i< amount; i+=1)
+                    newCells.push(new Cell() ); 
+                
+                this._cells = this._cells.map((line) => line = line.concat(JSON.parse(JSON.stringify(newCells))) );
+            }
+            
+            */
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Model;
+
+
+
 
 /***/ }),
 /* 14 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Cell = function Cell() {
-    var alive = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-    _classCallCheck(this, Cell);
-
+class Cell {
+  constructor(alive = false) {
     this.alive = alive;
-};
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Cell;
 
-exports["default"] = Cell;
-module.exports = exports["default"];
+
 
 /***/ })
 /******/ ]);

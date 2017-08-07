@@ -10,26 +10,26 @@ describe('Model', function() {
         
         it('should return array[3][3]', function(){
             
-            assert.instanceOf(model._Cells, Array)
-            assert.instanceOf(model._Cells[0], Array)
-            assert.instanceOf(model._Cells[1], Array)
-            assert.instanceOf(model._Cells[2], Array)
+            assert.instanceOf(model._cells, Array)
+            assert.instanceOf(model._cells[0], Array)
+            assert.instanceOf(model._cells[1], Array)
+            assert.instanceOf(model._cells[2], Array)
             
         });
         
         
         it('elements should be cells', function(){
              
-            assert.instanceOf(model._Cells[0][0], Cell)
-            assert.instanceOf(model._Cells[1][1], Cell)
-            assert.instanceOf(model._Cells[2][2], Cell)
+            assert.instanceOf(model._cells[0][0], Cell)
+            assert.instanceOf(model._cells[1][1], Cell)
+            assert.instanceOf(model._cells[2][2], Cell)
         });
         
         it('cells should be dead', function(){
             
-            assert.isFalse( model._Cells[0][0].alive);
-            assert.isFalse( model._Cells[1][1].alive);
-            assert.isFalse( model._Cells[2][2].alive);
+            assert.isFalse( model._cells[0][0].alive);
+            assert.isFalse( model._cells[1][1].alive);
+            assert.isFalse( model._cells[2][2].alive);
         });
     });
     
@@ -66,16 +66,16 @@ describe('Model', function() {
         
         it('dead cell should be dead after execute', function() {
             
-            model._Cells[0][0].alive = false;
+            model._cells[0][0].alive = false;
             model.killCell(0,0);
-            assert.isFalse(model._Cells[0][0].alive );
+            assert.isFalse(model._cells[0][0].alive );
         });
 
         it('alive cell should be dead after execute', function() {
 
-            model._Cells[0][0].alive = true;
+            model._cells[0][0].alive = true;
             model.killCell(0,0);
-            assert.isFalse(model._Cells[0][0].alive );
+            assert.isFalse(model._cells[0][0].alive );
         });
         
   });
@@ -87,17 +87,17 @@ describe('Model', function() {
         
         it('dead cell should be alive after execute', function() {
 
-            model._Cells[0][0].alive = false;
+            model._cells[0][0].alive = false;
             model.restoreCell(0,0);
-            assert.isTrue(model._Cells[0][0].alive);
+            assert.isTrue(model._cells[0][0].alive);
         });
 
         it('alive cell should be alive after execute', function() {
 
             
-            model._Cells[0][0].alive = true;
+            model._cells[0][0].alive = true;
             model.restoreCell(0,0);
-            assert.isTrue(model._Cells[0][0].alive);
+            assert.isTrue(model._cells[0][0].alive);
         });
         
   });
@@ -250,21 +250,21 @@ describe('Model', function() {
             model.restoreCell(0,0);
             model.restoreCell(1,1);
             
-            assert.lengthOf(model._Cells, 2)
-            assert.lengthOf(model._Cells[0], 2)
+            assert.lengthOf(model._cells, 2)
+            assert.lengthOf(model._cells[0], 2)
             
             model.changeWidth(3);
             
-            assert.lengthOf(model._Cells, 3)
-            assert.lengthOf(model._Cells[0], 2)
+            assert.lengthOf(model._cells, 3)
+            assert.lengthOf(model._cells[0], 2)
             
             
-            assert.isTrue(model._Cells[0][0].alive);
-            assert.isFalse(model._Cells[1][0].alive);
-            assert.isFalse(model._Cells[0][1].alive);
-            assert.isTrue(model._Cells[1][1].alive);     
-            assert.isFalse(model._Cells[2][0].alive);
-            assert.isFalse(model._Cells[2][1].alive);
+            assert.isTrue(model._cells[0][0].alive);
+            assert.isFalse(model._cells[1][0].alive);
+            assert.isFalse(model._cells[0][1].alive);
+            assert.isTrue(model._cells[1][1].alive);     
+            assert.isFalse(model._cells[2][0].alive);
+            assert.isFalse(model._cells[2][1].alive);
          
             
         });
@@ -278,22 +278,22 @@ describe('Model', function() {
             model.restoreCell(2,2);
             model.restoreCell(3,3);
             
-            assert.lengthOf(model._Cells, 4)
-            assert.lengthOf(model._Cells[0], 4)
+            assert.lengthOf(model._cells, 4)
+            assert.lengthOf(model._cells[0], 4)
             
             model.changeWidth(2);
             
-            assert.lengthOf(model._Cells, 2)
-            assert.lengthOf(model._Cells[0], 4)
+            assert.lengthOf(model._cells, 2)
+            assert.lengthOf(model._cells[0], 4)
             
-            assert.isTrue(model._Cells[0][0].alive);
-            assert.isFalse(model._Cells[1][0].alive);
-            assert.isFalse(model._Cells[0][1].alive);
-            assert.isTrue(model._Cells[1][1].alive);
-            assert.isFalse(model._Cells[0][2].alive);
-            assert.isFalse(model._Cells[1][2].alive);
-            assert.isFalse(model._Cells[0][3].alive);
-            assert.isFalse(model._Cells[1][3].alive);
+            assert.isTrue(model._cells[0][0].alive);
+            assert.isFalse(model._cells[1][0].alive);
+            assert.isFalse(model._cells[0][1].alive);
+            assert.isTrue(model._cells[1][1].alive);
+            assert.isFalse(model._cells[0][2].alive);
+            assert.isFalse(model._cells[1][2].alive);
+            assert.isFalse(model._cells[0][3].alive);
+            assert.isFalse(model._cells[1][3].alive);
         }); 
         
          it('should remain 1 column, with existing cells, from [4][4] array, when get 0', function(){
@@ -303,19 +303,19 @@ describe('Model', function() {
             model.restoreCell(0,1);
             model.restoreCell(0,3);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 4);
              
             model.changeWidth(0);
              
-            assert.lengthOf(model._Cells, 1);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 1);
+            assert.lengthOf(model._cells[0], 4);
              
              
-            assert.isFalse(model._Cells[0][0].alive);
-            assert.isTrue(model._Cells[0][1].alive);
-            assert.isFalse(model._Cells[0][2].alive);
-            assert.isTrue(model._Cells[0][3].alive);
+            assert.isFalse(model._cells[0][0].alive);
+            assert.isTrue(model._cells[0][1].alive);
+            assert.isFalse(model._cells[0][2].alive);
+            assert.isTrue(model._cells[0][3].alive);
          });
         
         it('should remain 1 column, with existing cells, from [4][4] array, when get negative number', function(){
@@ -325,19 +325,19 @@ describe('Model', function() {
             model.restoreCell(0,1);
             model.restoreCell(0,3);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 4);
              
             model.changeWidth(-1);
              
-            assert.lengthOf(model._Cells, 1);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 1);
+            assert.lengthOf(model._cells[0], 4);
              
              
-            assert.isFalse(model._Cells[0][0].alive);
-            assert.isTrue(model._Cells[0][1].alive);
-            assert.isFalse(model._Cells[0][2].alive);
-            assert.isTrue(model._Cells[0][3].alive);
+            assert.isFalse(model._cells[0][0].alive);
+            assert.isTrue(model._cells[0][1].alive);
+            assert.isFalse(model._cells[0][2].alive);
+            assert.isTrue(model._cells[0][3].alive);
          });
         
         it('should remain 1 column, with existing cells, from [4][4] array, when get not number variable', function(){
@@ -347,19 +347,19 @@ describe('Model', function() {
             model.restoreCell(0,1);
             model.restoreCell(0,3);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 4);
              
             model.changeWidth( new Object());
              
-            assert.lengthOf(model._Cells, 1);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 1);
+            assert.lengthOf(model._cells[0], 4);
              
              
-            assert.isFalse(model._Cells[0][0].alive);
-            assert.isTrue(model._Cells[0][1].alive);
-            assert.isFalse(model._Cells[0][2].alive);
-            assert.isTrue(model._Cells[0][3].alive);
+            assert.isFalse(model._cells[0][0].alive);
+            assert.isTrue(model._cells[0][1].alive);
+            assert.isFalse(model._cells[0][2].alive);
+            assert.isTrue(model._cells[0][3].alive);
          });
         
     });
@@ -372,17 +372,17 @@ describe('Model', function() {
             var model = new Model(1,1);
             model.restoreCell(0,0);
             
-            assert.lengthOf(model._Cells, 1)
-            assert.lengthOf(model._Cells[0], 1)
+            assert.lengthOf(model._cells, 1)
+            assert.lengthOf(model._cells[0], 1)
             
             model.changeHeight(3);
             
-            assert.lengthOf(model._Cells, 1)
-            assert.lengthOf(model._Cells[0], 3)
+            assert.lengthOf(model._cells, 1)
+            assert.lengthOf(model._cells[0], 3)
                   
-            assert.isTrue(model._Cells[0][0].alive);
-            assert.isFalse(model._Cells[0][1].alive);
-            assert.isFalse(model._Cells[0][2].alive);
+            assert.isTrue(model._cells[0][0].alive);
+            assert.isFalse(model._cells[0][1].alive);
+            assert.isFalse(model._cells[0][2].alive);
             
         });
        
@@ -395,22 +395,22 @@ describe('Model', function() {
             model.restoreCell(2,2);
             model.restoreCell(3,3);
             
-            assert.lengthOf(model._Cells, 4)
-            assert.lengthOf(model._Cells[0], 4)
+            assert.lengthOf(model._cells, 4)
+            assert.lengthOf(model._cells[0], 4)
             
             model.changeHeight(2);
             
-            assert.lengthOf(model._Cells, 4)
-            assert.lengthOf(model._Cells[0], 2)
+            assert.lengthOf(model._cells, 4)
+            assert.lengthOf(model._cells[0], 2)
             
-            assert.isTrue(model._Cells[0][0].alive);
-            assert.isFalse(model._Cells[1][0].alive);
-            assert.isFalse(model._Cells[2][0].alive);
-            assert.isFalse(model._Cells[3][0].alive);
-            assert.isFalse(model._Cells[0][1].alive);
-            assert.isTrue(model._Cells[1][1].alive);
-            assert.isFalse(model._Cells[2][1].alive);
-            assert.isFalse(model._Cells[3][1].alive);
+            assert.isTrue(model._cells[0][0].alive);
+            assert.isFalse(model._cells[1][0].alive);
+            assert.isFalse(model._cells[2][0].alive);
+            assert.isFalse(model._cells[3][0].alive);
+            assert.isFalse(model._cells[0][1].alive);
+            assert.isTrue(model._cells[1][1].alive);
+            assert.isFalse(model._cells[2][1].alive);
+            assert.isFalse(model._cells[3][1].alive);
         }); 
         
          it('should remain 1 row, with existing cells, from [4][4] array, when get 0', function(){
@@ -420,19 +420,19 @@ describe('Model', function() {
             model.restoreCell(1,0);
             model.restoreCell(3,0);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 4);
              
             model.changeHeight(0);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 1);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 1);
              
              
-            assert.isFalse(model._Cells[0][0].alive);
-            assert.isTrue(model._Cells[1][0].alive);
-            assert.isFalse(model._Cells[2][0].alive);
-            assert.isTrue(model._Cells[3][0].alive);
+            assert.isFalse(model._cells[0][0].alive);
+            assert.isTrue(model._cells[1][0].alive);
+            assert.isFalse(model._cells[2][0].alive);
+            assert.isTrue(model._cells[3][0].alive);
          });
         
         it('should remain 1 row, with existing cells, from [4][4] array, when get negative number', function(){
@@ -442,19 +442,19 @@ describe('Model', function() {
             model.restoreCell(1,0);
             model.restoreCell(3,0);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 4);
              
             model.changeHeight(-1);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 1);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 1);
              
              
-            assert.isFalse(model._Cells[0][0].alive);
-            assert.isTrue(model._Cells[1][0].alive);
-            assert.isFalse(model._Cells[2][0].alive);
-            assert.isTrue(model._Cells[3][0].alive);
+            assert.isFalse(model._cells[0][0].alive);
+            assert.isTrue(model._cells[1][0].alive);
+            assert.isFalse(model._cells[2][0].alive);
+            assert.isTrue(model._cells[3][0].alive);
          });
         
         it('should remain 1 row, with existing cells, from [4][4] array, when get not number variable', function(){
@@ -464,19 +464,19 @@ describe('Model', function() {
             model.restoreCell(1,0);
             model.restoreCell(3,0);
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 4);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 4);
              
             model.changeHeight(new Object());
              
-            assert.lengthOf(model._Cells, 4);
-            assert.lengthOf(model._Cells[0], 1);
+            assert.lengthOf(model._cells, 4);
+            assert.lengthOf(model._cells[0], 1);
              
              
-            assert.isFalse(model._Cells[0][0].alive);
-            assert.isTrue(model._Cells[1][0].alive);
-            assert.isFalse(model._Cells[2][0].alive);
-            assert.isTrue(model._Cells[3][0].alive);
+            assert.isFalse(model._cells[0][0].alive);
+            assert.isTrue(model._cells[1][0].alive);
+            assert.isFalse(model._cells[2][0].alive);
+            assert.isTrue(model._cells[3][0].alive);
          });
         
     });
