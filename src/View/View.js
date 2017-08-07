@@ -1,5 +1,5 @@
 import './View.styl';
-import EventEmitter from './EventEmitter.js';
+import EventEmitter from './EventEmitter';
 
 export default class View {
   constructor(width, height) {

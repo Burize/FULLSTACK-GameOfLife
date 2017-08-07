@@ -37,43 +37,17 @@ module.exports = {
 			loader: 'eslint-loader',
 			exclude: /node_modules/,
 		    },
-                       {
-                test: /\.css$/,
-                loader: "style-loader!css-loader!autoprefixer-loader",
-                exclude: [/node_modules/, /public/]
-            },
             {
                 test: /\.styl$/,
                  loader: "style-loader!css-loader!autoprefixer-loader!stylus-loader",
                 exclude: [/node_modules/, /public/]
             },
             {
-                test: /\.(jpg|jpeg)$/,
-                loader: require.resolve("url-loader")
-            },
-            {
-                test: /\.png$/,
-                loader: require.resolve("url-loader") 
-            },
-         
-            {
                test: /\.(eot|woff|woff2|ttf|otf|svg)$/,
                 loader: 'url-loader?limit=30000&name=[name].[ext]'  
-            },
-            {
-                test: /\.json$/,
-                loader: "json-loader"
             }
         ],
         loaders:[
-            {
-                test: /\.pug$/,
-                loader: "pug-loader",
-                exclude: [/node_modules/, /public/],
-                options: {
-                    pretty:true
-                }
-            },
             {
                 test: /\.js$/,
                 loader: "babel-loader",

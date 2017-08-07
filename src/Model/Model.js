@@ -1,4 +1,4 @@
-import Cell from './Cell.js';
+import Cell from './Cell';
 
 function sizeValidate(size) {
   if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
@@ -56,20 +56,15 @@ export default class Model {
   }
 
   updateCells() {
-    const cells = this._cells.map((line, x) => line.map((cell, y) => {
+    this._cells = this._cells.map((line, x) => line.map((cell, y) => {
       const neighbors = this.countNeighbors(x, y);
 
-      if (neighbors === 3) return true;
+      if (neighbors === 3) return new Cell(true);
 
-      if (neighbors === 2 && cell.alive === true) return true;
+      if (neighbors === 2 && cell.alive === true) return new Cell(true);
 
-      return false;
+      return new Cell();
     }));
-
-
-    for (let i = 0; i < this._cells.length; i += 1) {
-      for (let j = 0; j < this._cells[0].length; j += 1) { this._cells[i][j].alive = cells[i][j]; }
-    }
 
     return JSON.parse(JSON.stringify(this._cells));
   }

@@ -1,4 +1,4 @@
-import Controller from '../src/Controller/Controller.js'
+import Controller from '../src/Controller/Controller'
 
 
 describe('Controller', function(){

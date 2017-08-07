@@ -2,7 +2,6 @@
 "rules": {
     "linebreak-style": 0,
     "no-underscore-dangle": 0,
-    "import/extensions": 0,
       "max-len": 0,
     "no-unused-expressions": ['warn', {
       "allowShortCircuit": true,

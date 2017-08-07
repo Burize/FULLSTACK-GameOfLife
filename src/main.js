@@ -1,4 +1,4 @@
-import GameOfLife from './Controller/Controller.js';
+import GameOfLife from './Controller/Controller';
 
 
 $(() => {

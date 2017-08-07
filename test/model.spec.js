@@ -1,5 +1,5 @@
-import Model from '../src/Model/model.js';
-import Cell from '../src/Model/Cell.js';
+import Model from '../src/Model/model';
+import Cell from '../src/Model/Cell';
 
 
 describe('Model', function() {

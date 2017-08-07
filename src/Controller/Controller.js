@@ -1,5 +1,5 @@
-import View from '../View/view.js';
-import Model from '../Model/model.js';
+import View from '../View/view';
+import Model from '../Model/model';
 
 export default class Controller {
   constructor(x, y) {
