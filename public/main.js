@@ -10349,6 +10349,13 @@ $(() => {
 
 
 
+
+function arrayLengthCompare(array1, array2) {
+  if (array1.length === array2.length || array1[0].length === array2[0].length) { return true; }
+
+  return false;
+}
+
 class Controller {
   constructor(x, y) {
     this._model = new __WEBPACK_IMPORTED_MODULE_1__Model_model__["a" /* default */](x, y);
@@ -10373,7 +10380,7 @@ class Controller {
   }
 
   endGame(currentField) {
-    if (this._previousField.length !== currentField.length || this._previousField[0].length !== currentField[0].length) {
+    if (!arrayLengthCompare(this._previousField, currentField)) {
       this._previousField = currentField;
       return false;
     }
