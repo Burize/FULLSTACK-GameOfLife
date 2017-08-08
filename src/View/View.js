@@ -67,7 +67,9 @@ export default class View {
     this._ctx.fillStyle = 'black';
 
     for (let i = 0; i < this._width; i += 1) {
-      for (let j = 0; j < this._height; j += 1) { this._ctx.strokeRect(i * this.cellSize, j * this.cellSize, this.cellSize, this.cellSize); }
+      for (let j = 0; j < this._height; j += 1) {
+        this._ctx.strokeRect(i * this.cellSize, j * this.cellSize, this.cellSize, this.cellSize);
+      }
     }
 
     $(this._canvas).click(e => this.events.emit('fieldClick', { x: parseInt(e.offsetX / this.cellSize, 10),
@@ -83,11 +85,15 @@ export default class View {
       line.forEach((cell, y) => {
         this._ctx.clearRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
 
-        if (cell.alive) { this._ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize); } else { this._ctx.strokeRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize); }
+        if (cell.alive) {
+          this._ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+        } else {
+          this._ctx.strokeRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+        }
       });
     });
   }
-
+  /* eslint-disable class-methods-use-this, no-undef */
   endGame() {
     alert('Игра завершена!');
   }

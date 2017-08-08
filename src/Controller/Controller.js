@@ -1,11 +1,11 @@
-import View from '../View/view';
-import Model from '../Model/model';
+import View from '../View/View';
+import Model from '../Model/Model';
 
 
 export default class Controller {
   constructor(x, y) {
     this._model = new Model(x, y);
-
+    /* eslint-disable no-unused-expressions */
     this._gameTimer;
 
     this._pause = true;

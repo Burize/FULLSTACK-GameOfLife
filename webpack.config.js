@@ -11,10 +11,11 @@ module.exports = {
     entry: paths.source + 'main.js',
     output: {
         path: paths.build,
-        publicPath: './public/',
         filename: "[name].js"
     },
-  
+    devServer: {
+        publicPath: "/public"
+    },
     plugins:[
         new webpack.ProvidePlugin({
             $: "jquery",
