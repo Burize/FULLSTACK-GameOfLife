@@ -2,12 +2,6 @@ import View from '../View/view';
 import Model from '../Model/model';
 
 
-function arrayLengthCompare(array1, array2) {
-  if (array1.length === array2.length || array1[0].length === array2[0].length) { return true; }
-
-  return false;
-}
-
 export default class Controller {
   constructor(x, y) {
     this._model = new Model(x, y);
@@ -15,8 +9,6 @@ export default class Controller {
     this._gameTimer;
 
     this._pause = true;
-
-    this._previousField = [[], []];
 
     this._view = new View(x, y);
 
@@ -31,26 +23,6 @@ export default class Controller {
     this._view.events.subscribe('changeHeight', height => this.changeHeight.call(this, height));
   }
 
-  endGame(currentField) {
-    if (!arrayLengthCompare(this._previousField, currentField)) {
-      this._previousField = currentField;
-      return false;
-    }
-
-
-    for (let i = 0; i < this._previousField.length; i += 1) {
-      for (let j = 0; j < this._previousField[0].length; j += 1) {
-        if (this._previousField[i][j].alive !== currentField[i][j].alive) {
-          this._previousField = currentField;
-
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
   startGame() {
     const _this = this;
 
@@ -58,15 +30,15 @@ export default class Controller {
       _this._pause = false;
 
       _this._gameTimer = setTimeout(function tick() {
-        const field = _this._model.updateCells();
+        _this._model.updateCells();
 
-        if (_this.endGame(field)) {
+        if (!_this._model.fieldChange) {
           _this._pause = true;
           _this._view.endGame();
           return;
         }
 
-        _this._view.reDraw(field);
+        _this._view.reDraw(_this._model.getCells());
 
         _this._gameTimer = setTimeout(tick, 300);
       }, 300);

@@ -1,5 +1,25 @@
 import Cell from './Cell';
 
+function arrayLengthCompare(array1, array2) {
+  if (array1.length === array2.length || array1[0].length === array2[0].length) { return true; }
+
+  return false;
+}
+
+
+function isFieldChange(previousField, currentField) {
+  if (!arrayLengthCompare(previousField, currentField)) { return true; }
+
+  for (let i = 0; i < previousField.length; i += 1) {
+    for (let j = 0; j < previousField[0].length; j += 1) {
+      if (previousField[i][j].alive !== currentField[i][j].alive) { return true; }
+    }
+  }
+
+  return false;
+}
+
+
 function sizeValidate(size) {
   if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
   return 1;
@@ -8,6 +28,7 @@ function sizeValidate(size) {
 export default class Model {
   constructor(x, y) {
     this._cells = [];
+    this.fieldChange = false;
 
     for (let i = 0; i < x; i += 1) {
       this._cells[i] = [];
@@ -56,6 +77,8 @@ export default class Model {
   }
 
   updateCells() {
+    const previousfield = JSON.parse(JSON.stringify(this._cells));
+
     this._cells = this._cells.map((line, x) => line.map((cell, y) => {
       const neighbors = this.countNeighbors(x, y);
 
@@ -66,7 +89,8 @@ export default class Model {
       return new Cell();
     }));
 
-    return JSON.parse(JSON.stringify(this._cells));
+
+    this.fieldChange = isFieldChange(previousfield, this._cells);
   }
 
   changeWidth(_x) {

@@ -10350,12 +10350,6 @@ $(() => {
 
 
 
-function arrayLengthCompare(array1, array2) {
-  if (array1.length === array2.length || array1[0].length === array2[0].length) { return true; }
-
-  return false;
-}
-
 class Controller {
   constructor(x, y) {
     this._model = new __WEBPACK_IMPORTED_MODULE_1__Model_model__["a" /* default */](x, y);
@@ -10363,8 +10357,6 @@ class Controller {
     this._gameTimer;
 
     this._pause = true;
-
-    this._previousField = [[], []];
 
     this._view = new __WEBPACK_IMPORTED_MODULE_0__View_view__["a" /* default */](x, y);
 
@@ -10379,26 +10371,6 @@ class Controller {
     this._view.events.subscribe('changeHeight', height => this.changeHeight.call(this, height));
   }
 
-  endGame(currentField) {
-    if (!arrayLengthCompare(this._previousField, currentField)) {
-      this._previousField = currentField;
-      return false;
-    }
-
-
-    for (let i = 0; i < this._previousField.length; i += 1) {
-      for (let j = 0; j < this._previousField[0].length; j += 1) {
-        if (this._previousField[i][j].alive !== currentField[i][j].alive) {
-          this._previousField = currentField;
-
-          return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
   startGame() {
     const _this = this;
 
@@ -10406,15 +10378,15 @@ class Controller {
       _this._pause = false;
 
       _this._gameTimer = setTimeout(function tick() {
-        const field = _this._model.updateCells();
+        _this._model.updateCells();
 
-        if (_this.endGame(field)) {
+        if (!_this._model.fieldChange) {
           _this._pause = true;
           _this._view.endGame();
           return;
         }
 
-        _this._view.reDraw(field);
+        _this._view.reDraw(_this._model.getCells());
 
         _this._gameTimer = setTimeout(tick, 300);
       }, 300);
@@ -11214,6 +11186,26 @@ class EventEmitter {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cell__ = __webpack_require__(14);
 
 
+function arrayLengthCompare(array1, array2) {
+  if (array1.length === array2.length || array1[0].length === array2[0].length) { return true; }
+
+  return false;
+}
+
+
+function isFieldChange(previousField, currentField) {
+  if (!arrayLengthCompare(previousField, currentField)) { return true; }
+
+  for (let i = 0; i < previousField.length; i += 1) {
+    for (let j = 0; j < previousField[0].length; j += 1) {
+      if (previousField[i][j].alive !== currentField[i][j].alive) { return true; }
+    }
+  }
+
+  return false;
+}
+
+
 function sizeValidate(size) {
   if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
   return 1;
@@ -11222,6 +11214,7 @@ function sizeValidate(size) {
 class Model {
   constructor(x, y) {
     this._cells = [];
+    this.fieldChange = false;
 
     for (let i = 0; i < x; i += 1) {
       this._cells[i] = [];
@@ -11270,6 +11263,8 @@ class Model {
   }
 
   updateCells() {
+    const previousfield = JSON.parse(JSON.stringify(this._cells));
+
     this._cells = this._cells.map((line, x) => line.map((cell, y) => {
       const neighbors = this.countNeighbors(x, y);
 
@@ -11280,7 +11275,8 @@ class Model {
       return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]();
     }));
 
-    return JSON.parse(JSON.stringify(this._cells));
+
+    this.fieldChange = isFieldChange(previousfield, this._cells);
   }
 
   changeWidth(_x) {
