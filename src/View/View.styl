@@ -1,57 +1,43 @@
-@font-face{
+@font-face
     
-    font-family LatoLight;
+    font-family LatoLight
     src url(./Fonts/Lato-Light.woff) format('woff'),
         url(./Fonts/Lato-Light.ttf) format('truetype'),
-        url(./Fonts/Lato-Light.svg#LatoLight) format('svg');
-    font-style normal;
-    font-weight 300;
-}
+        url(./Fonts/Lato-Light.svg#LatoLight) format('svg')
+    font-style normal
+    font-weight 300
 
 
-body{
+
+body   
+   font-family LatoLight
+   font-style normal
+   font-weight 300
+
+
+.container
+    width 1100px
+    margin auto
+    margin-top 3%
     
-   font-family LatoLight;
-   font-style normal;
-   font-weight 300;
-}
-
-
-.container{
- 
-    width 1100px;
-    margin auto;
-    margin-top 3%;
-    
-    .controls{
+    .controls
+        display flex
+        margin-bottom 2em
         
-        display flex;
-        margin-bottom 2em;
-        
-        > *{
+        > *
+            margin-right 2em
             
-            margin-right 2em;
-            
-            input::-ms-clear {
-                display: none;
-            }
-            
-            span{
-                
-                user-select none;
-                font-size 1.2em;
-            }
-        }
-    }
+            input::-ms-clear 
+                display: none
+
+            span
+                user-select none
+                font-size 1.2em
+
     
-    .field{
+    .field
         
-        canvas{
-            
-            margin auto;
-            display block;
-            border solid black 1px;
-        }
-    }
-    
-}
+        canvas
+            margin auto
+            display block
+            border solid black 1px
