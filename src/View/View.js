@@ -1,3 +1,4 @@
+import Mustache from 'mustache';
 import './View.styl';
 import EventEmitter from './EventEmitter';
 
@@ -9,22 +10,20 @@ export default class View {
 
     this.events = new EventEmitter();
 
-    const container = $('<article/>').addClass('container');
+    const template = $('#game-template').html();
+    const output = $('.container');
+    const data = { width, height };
+    const html = Mustache.to_html(template, data);
+    output.html(html);
 
-    const controls = $('<section/>').addClass('controls');
-
-    this.buttonStart = $('<button>Старт</button>')
-      .addClass('controls__btn-start')
+    this.buttonStart = output.find('.controls__btn-start')
       .click('click.buttonStart', () => this.events.emit('startGame'));
 
-    this.buttonPause = $('<button>Пауза</button>')
-      .addClass('controls__btn-pause')
+    this.buttonPause = output.find('.controls__btn-pause')
       .on('click.buttonPause', () => this.events.emit('pause'));
 
-    const controlsWidth = $('<div/>').addClass('controls__width');
 
-    this.inputWidth = $('<input/>')
-      .attr({ id: 'controls__width-input', type: 'number', min: '1' }).val(width)
+    this.inputWidth = output.find('.controls__width-input')
       .on('blur.inputWidth', function () {
         _this._width = this.value;
         _this._canvas.width = _this._width * _this.cellSize;
@@ -39,12 +38,8 @@ export default class View {
         $(this).focus();
       });
 
-    controlsWidth.append($('<span>Ширина: </span>'), this.inputWidth);
 
-    const controlsHeight = $('<div/>').addClass('controls__height');
-
-    this.inputHeight = $('<input/>')
-      .attr({ id: 'controls__height-input', type: 'number', min: '1' }).val(height)
+    this.inputHeight = output.find('.controls__height-input')
       .on('blur.inputHeight', function () {
         _this._height = this.value;
         _this._canvas.height = _this._height * _this.cellSize;
@@ -59,24 +54,10 @@ export default class View {
         $(this).focus();
       });
 
-    controlsHeight.append($('<span>Высота: </span>'), this.inputHeight);
 
-    controls.append(this.buttonStart, this.buttonPause, controlsWidth, controlsHeight);
+    this._canvas = output.find('canvas')[0];
 
-    container.append(controls);
-
-    const field = $('<section/>').addClass('field');
-
-    this._canvas = document.createElement('canvas');
-    this._canvas.className = 'field__canvas';
-
-    field.append(this._canvas);
-    container.append(field);
-
-    $('body').append(container);
-
-
-    this.cellSize = parseFloat(field.css('font-size'));
+    this.cellSize = parseFloat(output.find('.field').css('font-size'));
 
     this._canvas.width = this._width * this.cellSize;
     this._canvas.height = this._height * this.cellSize;

@@ -18,7 +18,8 @@
     "jquery-ui-bundle": "^1.11.4",
     "less": "^2.7.2",
     "react": "*",
-    "react-dom": "*"
+    "react-dom": "*",
+    "mustache": "^2.3.0"
   },
   "devDependencies": {
     "Canteen": "^1.0.4",

@@ -11,5 +11,23 @@
     <link rel="mask-icon" href="favicon.svg" color="#FFC618")/>
 </head>
 <body>
+    <main class="container"></main>
+<script id="game-template" type="text/template">
+			<section class="controls">
+                <button class="controls__btn-start">Старт</button>
+                <button class="controls__btn-pause">Пауза</button>
+                <div class="controls__width">
+                    <span>Ширина: </span>
+                    <input class="controls__width-input" type="number" min="1" value={{width}} />
+                </div>
+                <div class="controls__height">
+                    <span>Высота: </span>
+                    <input class="controls__height-input" type="number" min="1" value={{height}} />
+                </div>
+            </section>
+            <section class="field">
+                <canvas class="field__canvas">
+            </section>
+	</script>
 <script src='./public/main.js'></script>
 </body>
