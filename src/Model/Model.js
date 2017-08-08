@@ -10,13 +10,7 @@ function arrayLengthCompare(array1, array2) {
 function isFieldChange(previousField, currentField) {
   if (!arrayLengthCompare(previousField, currentField)) { return true; }
 
-  for (let i = 0; i < previousField.length; i += 1) {
-    for (let j = 0; j < previousField[0].length; j += 1) {
-      if (previousField[i][j].alive !== currentField[i][j].alive) { return true; }
-    }
-  }
-
-  return false;
+  return currentField.some((column, x) => column.some((cell, y) => cell.alive !== previousField[x][y].alive)); // eslint-disable-line max-len
 }
 
 
@@ -27,14 +21,9 @@ function sizeValidate(size) {
 
 export default class Model {
   constructor(x, y) {
-    this._cells = [];
     this.fieldChange = false;
 
-    for (let i = 0; i < x; i += 1) {
-      this._cells[i] = [];
-
-      for (let j = 0; j < y; j += 1) { this._cells[i].push(new Cell()); }
-    }
+    this._cells = Array.from({ length: x }, () => Array.from({ length: y }, () => new Cell()));
   }
 
 
@@ -110,69 +99,99 @@ export default class Model {
   }
 
   changeWidth(_x) {
-    const cells = [];
-
     const x = sizeValidate(_x);
 
-    for (let i = 0; i < x; i += 1) {
-      cells[i] = [];
 
-      for (let j = 0; j < this._cells[0].length; j += 1) {
-        if (i < this._cells.length) {
-          cells[i][j] = this._cells[i][j];
-        } else {
-          cells[i][j] = new Cell();
-        }
+    if (x < this._cells.length) {
+      this._cells.splice(x, Number.MAX_VALUE);
+    } else {
+      const newColumns = x - this._cells.length;
+      for (let i = 0; i < newColumns; i += 1) {
+        this._cells.push(Array.from({ length: this._cells[0].length }, () => new Cell()));
       }
     }
-
-    this._cells = cells;
   }
 
   changeHeight(_y) {
-    const cells = [];
-
     const y = sizeValidate(_y);
 
-    for (let i = 0; i < this._cells.length; i += 1) {
-      cells[i] = [];
 
-      for (let j = 0; j < y; j += 1) {
-        if (j < this._cells[0].length) {
-          cells[i][j] = this._cells[i][j];
-        } else {
-          cells[i][j] = new Cell();
-        }
-      }
+    if (y < this._cells[0].length) {
+      this._cells.forEach(line => line.splice(y, Number.MAX_VALUE));
+    } else {
+      const newCells = Array.from({ length: y - this._cells[0].length }, () => new Cell());
+
+      this._cells = this._cells.map(line =>
+        line.concat(JSON.parse(JSON.stringify(newCells))));
     }
-
-    this._cells = cells;
-
-
-    /* По требованиям нужно стараться работать с методами перебора массивов 
-    и не использовать циклов. 
-    Был такой вариант реализации, но на мой взгляд он менее читабельный и не быстрее чем с циклами. 
-    Причем для функции изменения ширины нужно будет дописать еще пару действий для этого варианта. 
-    Поэтому решил оставить как было с циклами.
-        
-            if(y < this._cells[0].length)
-            {
-                
-                this._cells.forEach((line) => line.splice(y, Number.MAX_VALUE) );
-            }    
-        else
-            {
-             
-                let amount = y - this._cells[0].length;
-                let newCells = []
-                for(let i = 0; i< amount; i+=1)
-                    newCells.push(new Cell() ); 
-                
-                this._cells = this._cells.map((line) => 
-                line = line.concat(JSON.parse(JSON.stringify(newCells))) );
-            }
-            
-            */
   }
 }
 
+/*eslint-disable*/
+
+if (!Array.from) {
+  Array.from = (function() {
+    var toStr = Object.prototype.toString;
+    var isCallable = function(fn) {
+      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
+    };
+    var toInteger = function (value) {
+      var number = Number(value);
+      if (isNaN(number)) { return 0; }
+      if (number === 0 || !isFinite(number)) { return number; }
+      return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+    };
+    var maxSafeInteger = Math.pow(2, 53) - 1;
+    var toLength = function (value) {
+      var len = toInteger(value);
+      return Math.min(Math.max(len, 0), maxSafeInteger);
+    };
+
+    return function from(arrayLike/*, mapFn, thisArg */) {
+
+      var C = this;
+
+      var items = Object(arrayLike);
+
+      if (arrayLike == null) {
+        throw new TypeError('Array.from requires an array-like object - not null or undefined');
+      }
+
+      var mapFn = arguments[1];
+      if (typeof mapFn !== 'undefined') {
+        mapFn = arguments.length > 1 ? arguments[1] : void undefined;
+
+        if (!isCallable(mapFn)) {
+          throw new TypeError('Array.from: when provided, the second argument must be a function');
+        }
+
+        if (arguments.length > 2) {
+          T = arguments[2];
+        }
+      }
+
+      var len = toLength(items.length);
+
+      var A = isCallable(C) ? Object(new C(len)) : new Array(len);
+
+      var k = 0;
+
+      var kValue;
+      while (k < len) {
+        kValue = items[k];
+        if (mapFn) {
+          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+        } else {
+          A[k] = kValue;
+        }
+        k += 1;
+      }
+
+      A.length = len;
+
+      return A;
+    };
+  }());
+}
+
+/*eslint-disable*/

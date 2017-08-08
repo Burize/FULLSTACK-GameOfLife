@@ -5,8 +5,8 @@ import Model from '../Model/Model';
 export default class Controller {
   constructor(x, y) {
     this._model = new Model(x, y);
-    /* eslint-disable no-unused-expressions */
-    this._gameTimer;
+
+    this._gameTimer; // eslint-disable-line no-unused-expressions
 
     this._pause = true;
 
