@@ -13,6 +13,11 @@ function isFieldChange(previousField, currentField) {
   return currentField.some((column, x) => column.some((cell, y) => cell.alive !== previousField[x][y].alive)); // eslint-disable-line max-len
 }
 
+function updateCell(neighbors, cell) {
+  if (neighbors === 3 || neighbors === 2 && cell.alive === true) return new Cell(true); // eslint-disable-line 
+
+  return new Cell();
+}
 
 function sizeValidate(size) {
   if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
@@ -87,11 +92,7 @@ export default class Model {
     this._cells = this._cells.map((line, x) => line.map((cell, y) => {
       const neighbors = this.countNeighbors(x, y);
 
-      if (neighbors === 3) return new Cell(true);
-
-      if (neighbors === 2 && cell.alive === true) return new Cell(true);
-
-      return new Cell();
+      return updateCell(neighbors, cell);
     }));
 
 
