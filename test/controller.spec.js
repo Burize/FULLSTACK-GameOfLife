@@ -3,11 +3,15 @@ import Controller from '../src/Controller/Controller'
 
 describe('Controller', function(){
     
+    var game;
+    
+    beforeEach( () => {
+        
+        $('body').html(''); 
+        game = new Controller(20,20);
+    });
+    
     describe('constructor', function(){
-        
-         
-        var game = new Controller(20,20);
-        
         
         it('Timer should be undefined', function(){
             
@@ -27,37 +31,28 @@ describe('Controller', function(){
         })
     })
      
-    describe('Start game / End Game', function(){
-        
-       var game = new Controller(20,20);
+    describe('Start game', function(){
         
         it("should call 'Start_game()' after click on 'Старт'", function(){
             
-            var spy = sinon.spy(game, 'startGame');
-         
-            game._view.buttonStart.trigger('click');
+            let spy = sinon.spy(game, 'startGame');
+            game._view.$buttonStart.trigger('click');
+            
             sinon.assert.called(spy);
+            assert.isFalse(game._pause, 'Game on pause');
+            assert.isNumber(game._gameTimer, 'GameTimer undefined');
         })       
      
-        it("Game shouldn't be on pause", function(){
-            
-                assert.isFalse(game._pause);
-        });
-        
-        it("should start GameTimer'", function(){
-            
-                assert.isNumber(game._gameTimer);
-        });
-        
-        
+    })
 
-        var spy_updateCells = sinon.spy(game._model, 'updateCells');
-        var spy_reDraw = sinon.spy(game._view, 'reDraw');
-        var spy_viewEndGame = sinon.spy(game._view, 'endGame');
-        var spy_alertGame = sinon.spy(window, 'alert');
+    describe('End game', function(){
         
         it("shouldn't call End_game and other functions in GameTimer handler before its one tick", function(done){  
              
+            game._view.$buttonStart.trigger('click');
+            let spy_updateCells = sinon.spy(game._model, 'updateCells');
+            let spy_reDraw = sinon.spy(game._view, 'reDraw');;
+            
               setTimeout( function () {
                   
                   
@@ -75,14 +70,20 @@ describe('Controller', function(){
         
         
         it("should execute functions in GameTimer handler after first tick", function(done){  
+
+            game._model._cells[0][0].alive = true;
+            game._view.$buttonStart.trigger('click');
+            let spy_updateCells = sinon.spy(game._model, 'updateCells');
+            let spy_reDraw = sinon.spy(game._view, 'reDraw');
+            let spy_viewEndGame = sinon.spy(game._view, 'endGame');
             
               setTimeout( function () {
                   
                   
                     try {
-                        assert.equal(spy_updateCells.callCount, 1 );
-                        assert.equal(spy_reDraw.callCount, 1 ); 
-                        assert.isFalse(game._pause) 
+                        assert.equal(spy_updateCells.callCount, 1, 'updateCells' );
+                        assert.equal(spy_reDraw.callCount, 1, 'reDraw' ); 
+                        assert.equal(spy_viewEndGame.callCount, 0, 'endGame' );  
                        
                         done(); 
                   } catch( e ) {
@@ -93,15 +94,21 @@ describe('Controller', function(){
         })
         
         
-         it("should end Game after second GameTimer tick", function(done){  
+         it("should end game after second GameTimer tick", function(done){  
             
+            game._model._cells[0][0].alive = true;
+            game._view.$buttonStart.trigger('click');
+      
+            let spy_viewEndGame = sinon.spy(game._view, 'endGame');
+            let spy_alertGame = sinon.spy(window, 'alert');
+             
               setTimeout( function () {
                   
                   
                     try {
                         sinon.assert.called(spy_viewEndGame);
                         sinon.assert.called(spy_alertGame);
-                        assert.isTrue(game._pause) ;
+              
                         done(); 
                   } catch( e ) {
                     done( e );
@@ -112,28 +119,29 @@ describe('Controller', function(){
     
    
     })
-    
+   
+ 
     describe('Game pause', function(){
-
-        var game = new Controller(20,20);
         
         it('game should be on pause', function(){
             
             
-            game._view.buttonStart.trigger('click');
+            game._view.$buttonStart.trigger('click');
             assert.isFalse(game._pause);
-            game._view.buttonPause.trigger('click');
+            game._view.$buttonPause.trigger('click');
             assert.isTrue(game._pause);
         })
         
     })
-    
+       
     describe('Field click',function(){
-        
-        
+          
+    
+     
         it('should change cell at 0,0 from dead to alive',function(){
-            
-            var game = new Controller(20,20);
+           
+            let spy_fieldClick = sinon.spy(game, 'fieldClick');
+            let spy_changeCell = sinon.spy(game._model,'changeCell');
             
             var evt = new MouseEvent("click", {
                     bubbles: true,
@@ -142,9 +150,6 @@ describe('Controller', function(){
                     clientX: game._view._canvas.offsetLeft + 10,
                     clientY: game._view._canvas.offsetTop + 10
                   });
-            
-            var spy_fieldClick = sinon.spy(game, 'fieldClick');
-            var spy_changeCell = sinon.spy(game._model,'changeCell');
             
             assert.isFalse(game._model._cells[0][0].alive);
          
@@ -157,11 +162,12 @@ describe('Controller', function(){
             assert.isTrue(game._model._cells[0][0].alive);
             
         })
-        
-        
+       
+    
         it('should change cell at 1,1 from alive to dead',function(){
-            
-            var game = new Controller(20,20);
+     
+            let spy_fieldClick = sinon.spy(game, 'fieldClick');
+            let spy_changeCell = sinon.spy(game._model,'changeCell');
             
             var evt = new MouseEvent("click", {
                     bubbles: true,
@@ -170,10 +176,6 @@ describe('Controller', function(){
                     clientX: game._view._canvas.offsetLeft + 20,
                     clientY: game._view._canvas.offsetTop + 20
                   });
-            
-            var spy_fieldClick = sinon.spy(game, 'fieldClick');
-            var spy_changeCell = sinon.spy(game._model,'changeCell');
-            
             
             game._model._cells[1][1].alive = true;
          
@@ -187,11 +189,13 @@ describe('Controller', function(){
         })
         
         
+ 
          it("shouldn't change cell while game is playing",function(){
             
-            var game = new Controller(20,20);
+            let spy_fieldClick = sinon.spy(game, 'fieldClick');
+            let spy_changeCell = sinon.spy(game._model,'changeCell');
             
-            game._view.buttonStart.trigger('click');
+            game._view.$buttonStart.trigger('click');
              
             var evt = new MouseEvent("click", {
                     bubbles: true,
@@ -200,9 +204,6 @@ describe('Controller', function(){
                     clientX: game._view._canvas.offsetLeft + 20,
                     clientY: game._view._canvas.offsetTop + 20
                   });
-            
-            var spy_fieldClick = sinon.spy(game, 'fieldClick');
-            var spy_changeCell = sinon.spy(game._model,'changeCell');
          
             game._view._canvas.dispatchEvent(evt);
             
@@ -210,87 +211,55 @@ describe('Controller', function(){
             
             assert.equal( spy_changeCell.callCount , 0 );
             
-        })
+        }) 
    
     })
     
     describe('Change size', function(){
         
-        var game = new Controller(20, 20);
         
-        var spy_changeWidth = sinon.spy(game, 'changeWidth')
-        var spy_modelChangeWidth = sinon.spy(game._model, 'changeWidth')
-        
-        var spy_changeHeight = sinon.spy(game, 'changeHeight')
-        var spy_modelChangeHeight = sinon.spy(game._model, 'changeHeight')
-        
+         
         it('should change width from 20 to 15 (height should be unchanged)', function(){
+
+            let spy_changeWidth = sinon.spy(game, 'changeWidth')
+            let spy_modelChangeWidth = sinon.spy(game._model, 'changeWidth')
+
+            assert.lengthOf(game._model._cells, 20);
+            assert.lengthOf(game._model._cells[0], 20);
             
+            game._view.$inputWidth.val(15).blur();
+     
+            
+            assert.equal(spy_changeWidth.callCount, 1, 'changeWidth');
+            assert.equal(spy_modelChangeWidth.callCount, 1, 'modelChangeWidth');
+            
+            assert.lengthOf(game._model._cells, 15);
+            assert.lengthOf(game._model._cells[0], 20);
+            
+        })
+        
+         
+        it('should change height from 20 to 12 (width should be unchanged)', function(){
+            
+            let spy_changeHeight = sinon.spy(game, 'changeHeight')
+            let spy_modelChangeHeight = sinon.spy(game._model, 'changeHeight')
             
             assert.lengthOf(game._model._cells, 20);
             assert.lengthOf(game._model._cells[0], 20);
             
-            game._view.inputWidth.val(15).blur();  //<------------
-            $('.controls__width-input').val(15).blur(); //<------------
+            game._view.$inputHeight.val(12).blur();
             
-            sinon.assert.called(spy_changeWidth);
-            sinon.assert.called(spy_modelChangeWidth);
+            assert.equal(spy_changeHeight.callCount, 1, 'changeHeight');
+            assert.equal(spy_modelChangeHeight.callCount, 1, 'modelChangeHeight');
             
-            assert.lengthOf(game._model._cells, 15);
-            assert.lengthOf(game._model._cells[0], 20);
-            
-        })
-        
-        
-        it('should change height from 20 to 12 (width should be unchanged)', function(){
-            
-            
-            assert.lengthOf(game._model._cells, 15);
-            assert.lengthOf(game._model._cells[0], 20);
-            
-            game._view.inputHeight.val(12).blur();
-            
-            assert.equal(spy_changeHeight.callCount, 1);
-            assert.equal(spy_modelChangeHeight.callCount, 1);
-            
-            assert.lengthOf(game._model._cells, 15);
+            assert.lengthOf(game._model._cells, 20);
             assert.lengthOf(game._model._cells[0], 12);
             
         })
         
-        it('should change width from 15 to 18 (height should be unchanged)', function(){
-            
-            
-            assert.lengthOf(game._model._cells, 15);
-            assert.lengthOf(game._model._cells[0], 12);
-            
-            game._view.inputWidth.val(18).blur();
-            
-            assert.equal(spy_changeWidth.callCount, 2);
-            assert.equal(spy_modelChangeWidth.callCount, 2);
-            
-            assert.lengthOf(game._model._cells, 18);
-            assert.lengthOf(game._model._cells[0], 12);
-            
-        })
+ 
         
-        it('should change height from 12 to 33 (width should be unchanged)', function(){
-            
-            
-            assert.lengthOf(game._model._cells, 18);
-            assert.lengthOf(game._model._cells[0], 12);
-            
-            game._view.inputHeight.val(33).blur();
-            
-            assert.equal(spy_changeHeight.callCount, 2);
-            assert.equal(spy_modelChangeHeight.callCount, 2);
-            
-            assert.lengthOf(game._model._cells, 18);
-            assert.lengthOf(game._model._cells[0], 33);
-            
-        })
-        
-    })
+    }) 
 })
 
 

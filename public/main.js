@@ -57,7 +57,7 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "./public/";
+/******/ 	__webpack_require__.p = "/public";
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 1);
@@ -10334,7 +10334,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 $(() => {
-  const _GameOfLife = new __WEBPACK_IMPORTED_MODULE_0__Controller_Controller__["a" /* default */](20, 20);
+  const _GameOfLife = new __WEBPACK_IMPORTED_MODULE_0__Controller_Controller__["a" /* default */](20, 20); // eslint-disable-line no-unused-vars
 });
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
@@ -10344,21 +10344,21 @@ $(() => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__View_view__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Model_model__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__View_View__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Model_Model__ = __webpack_require__(15);
 
 
 
 
 class Controller {
   constructor(x, y) {
-    this._model = new __WEBPACK_IMPORTED_MODULE_1__Model_model__["a" /* default */](x, y);
+    this._model = new __WEBPACK_IMPORTED_MODULE_1__Model_Model__["a" /* default */](x, y);
 
-    this._gameTimer;
+    this._gameTimer; // eslint-disable-line no-unused-expressions
 
     this._pause = true;
 
-    this._view = new __WEBPACK_IMPORTED_MODULE_0__View_view__["a" /* default */](x, y);
+    this._view = new __WEBPACK_IMPORTED_MODULE_0__View_View__["a" /* default */](x, y);
 
     this._view.events.subscribe('startGame', () => this.startGame.call(this));
 
@@ -10429,8 +10429,10 @@ class Controller {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__View_styl__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__View_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__View_styl__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__EventEmitter__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Template__ = __webpack_require__(14);
 
-
+// eslint-disable-line
+// eslint-disable-line
 
 
 class View {
@@ -10441,20 +10443,20 @@ class View {
 
     this.events = new __WEBPACK_IMPORTED_MODULE_2__EventEmitter__["a" /* default */]();
 
-    const template = $('#game-template').html();
-    const output = $('.container');
+    const $output = $('body');
     const data = { width, height };
-    const html = __WEBPACK_IMPORTED_MODULE_0_mustache___default.a.to_html(template, data);
-    output.html(html);
+    const html = __WEBPACK_IMPORTED_MODULE_0_mustache___default.a.to_html(__WEBPACK_IMPORTED_MODULE_3__Template__["a" /* default */], data);
 
-    this.buttonStart = output.find('.controls__btn-start')
+    $output.append($(html));
+      
+    this.$buttonStart = $output.find('.controls__btn-start')
       .click('click.buttonStart', () => this.events.emit('startGame'));
 
-    this.buttonPause = output.find('.controls__btn-pause')
+    this.$buttonPause = $output.find('.controls__btn-pause')
       .on('click.buttonPause', () => this.events.emit('pause'));
 
 
-    this.inputWidth = output.find('.controls__width-input')
+    this.$inputWidth = $output.find('.controls__width-input')
       .on('blur.inputWidth', function () {
         _this._width = this.value;
         _this._canvas.width = _this._width * _this.cellSize;
@@ -10470,7 +10472,7 @@ class View {
       });
 
 
-    this.inputHeight = output.find('.controls__height-input')
+    this.$inputHeight = $output.find('.controls__height-input')
       .on('blur.inputHeight', function () {
         _this._height = this.value;
         _this._canvas.height = _this._height * _this.cellSize;
@@ -10486,9 +10488,9 @@ class View {
       });
 
 
-    this._canvas = output.find('canvas')[0];
+    this._canvas = $output.find('canvas')[0];
 
-    this.cellSize = parseFloat(output.find('.field').css('font-size'));
+    this.cellSize = parseFloat($output.find('.field').css('font-size'));
 
     this._canvas.width = this._width * this.cellSize;
     this._canvas.height = this._height * this.cellSize;
@@ -10498,7 +10500,9 @@ class View {
     this._ctx.fillStyle = 'black';
 
     for (let i = 0; i < this._width; i += 1) {
-      for (let j = 0; j < this._height; j += 1) { this._ctx.strokeRect(i * this.cellSize, j * this.cellSize, this.cellSize, this.cellSize); }
+      for (let j = 0; j < this._height; j += 1) {
+        this._ctx.strokeRect(i * this.cellSize, j * this.cellSize, this.cellSize, this.cellSize);
+      }
     }
 
     $(this._canvas).click(e => this.events.emit('fieldClick', { x: parseInt(e.offsetX / this.cellSize, 10),
@@ -10514,11 +10518,20 @@ class View {
       line.forEach((cell, y) => {
         this._ctx.clearRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
 
-        if (cell.alive) { this._ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize); } else { this._ctx.strokeRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize); }
+        if (cell.alive) {
+          this._ctx.fillRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+        } else {
+          this._ctx.strokeRect(x * this.cellSize, y * this.cellSize, this.cellSize, this.cellSize);
+        }
       });
     });
   }
+  /* eslint-disable class-methods-use-this, no-undef */
 
+  changeWidth() {
+
+
+  }
   endGame() {
     alert('Игра завершена!');
   }
@@ -11805,7 +11818,34 @@ class EventEmitter {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cell__ = __webpack_require__(15);
+const template = `
+    <main class="container">
+            <section class="controls">
+                <button class="controls__btn-start">Старт</button>
+                <button class="controls__btn-pause">Пауза</button>
+                <div class="controls__width">
+                    <span>Ширина: </span>
+                    <input class="controls__width-input" type="number" min="1" value={{width}} />
+                </div>
+                <div class="controls__height">
+                    <span>Высота: </span>
+                    <input class="controls__height-input" type="number" min="1" value={{height}} />
+                </div>
+            </section>
+            <section class="field">
+                <canvas class="field__canvas">
+            </section>
+    </main>
+        `;
+/* harmony default export */ __webpack_exports__["a"] = (template);
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cell__ = __webpack_require__(16);
 
 
 function arrayLengthCompare(array1, array2) {
@@ -11818,15 +11858,14 @@ function arrayLengthCompare(array1, array2) {
 function isFieldChange(previousField, currentField) {
   if (!arrayLengthCompare(previousField, currentField)) { return true; }
 
-  for (let i = 0; i < previousField.length; i += 1) {
-    for (let j = 0; j < previousField[0].length; j += 1) {
-      if (previousField[i][j].alive !== currentField[i][j].alive) { return true; }
-    }
-  }
-
-  return false;
+  return currentField.some((column, x) => column.some((cell, y) => cell.alive !== previousField[x][y].alive)); // eslint-disable-line max-len
 }
 
+function updateCell(neighbors, cell) {
+  if (neighbors === 3 || neighbors === 2 && cell.alive === true) return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */](true); // eslint-disable-line 
+
+  return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]();
+}
 
 function sizeValidate(size) {
   if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
@@ -11835,14 +11874,9 @@ function sizeValidate(size) {
 
 class Model {
   constructor(x, y) {
-    this._cells = [];
     this.fieldChange = false;
 
-    for (let i = 0; i < x; i += 1) {
-      this._cells[i] = [];
-
-      for (let j = 0; j < y; j += 1) { this._cells[i].push(new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]()); }
-    }
+    this._cells = Array.from({ length: x }, () => Array.from({ length: y }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]()));
   }
 
 
@@ -11865,21 +11899,37 @@ class Model {
   countNeighbors(x, y) {
     let neighbors = 0;
 
-    if (x > 0 && y > 0) { neighbors += this._cells[x - 1][y - 1].alive; }
+    if (x > 0 && y > 0) {
+      neighbors += this._cells[x - 1][y - 1].alive;
+    }
 
-    if (x > 0) { neighbors += this._cells[x - 1][y].alive; }
+    if (x > 0) {
+      neighbors += this._cells[x - 1][y].alive;
+    }
 
-    if (x > 0 && y < this._cells[0].length - 1) { neighbors += this._cells[x - 1][y + 1].alive; }
+    if (x > 0 && y < this._cells[0].length - 1) {
+      neighbors += this._cells[x - 1][y + 1].alive;
+    }
 
-    if (y > 0) { neighbors += this._cells[x][y - 1].alive; }
+    if (y > 0) {
+      neighbors += this._cells[x][y - 1].alive;
+    }
 
-    if (y < this._cells[0].length - 1) { neighbors += this._cells[x][y + 1].alive; }
+    if (y < this._cells[0].length - 1) {
+      neighbors += this._cells[x][y + 1].alive;
+    }
 
-    if (x < this._cells.length - 1 && y > 0) { neighbors += this._cells[x + 1][y - 1].alive; }
+    if (x < this._cells.length - 1 && y > 0) {
+      neighbors += this._cells[x + 1][y - 1].alive;
+    }
 
-    if (x < this._cells.length - 1) { neighbors += this._cells[x + 1][y].alive; }
+    if (x < this._cells.length - 1) {
+      neighbors += this._cells[x + 1][y].alive;
+    }
 
-    if (x < this._cells.length - 1 && y < this._cells[0].length - 1) { neighbors += this._cells[x + 1][y + 1].alive; }
+    if (x < this._cells.length - 1 && y < this._cells[0].length - 1) {
+      neighbors += this._cells[x + 1][y + 1].alive;
+    }
 
     return neighbors;
   }
@@ -11890,11 +11940,7 @@ class Model {
     this._cells = this._cells.map((line, x) => line.map((cell, y) => {
       const neighbors = this.countNeighbors(x, y);
 
-      if (neighbors === 3) return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */](true);
-
-      if (neighbors === 2 && cell.alive === true) return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */](true);
-
-      return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]();
+      return updateCell(neighbors, cell);
     }));
 
 
@@ -11902,68 +11948,107 @@ class Model {
   }
 
   changeWidth(_x) {
-    const cells = [];
-
     const x = sizeValidate(_x);
 
-    for (let i = 0; i < x; i += 1) {
-      cells[i] = [];
 
-      for (let j = 0; j < this._cells[0].length; j += 1) {
-        if (i < this._cells.length) { cells[i][j] = this._cells[i][j]; } else { cells[i][j] = new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */](); }
+    if (x < this._cells.length) {
+      this._cells.splice(x, Number.MAX_VALUE);
+    } else {
+      const newColumns = x - this._cells.length;
+      for (let i = 0; i < newColumns; i += 1) {
+        this._cells.push(Array.from({ length: this._cells[0].length }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]()));
       }
     }
-
-    this._cells = cells;
   }
 
   changeHeight(_y) {
-    const cells = [];
-
     const y = sizeValidate(_y);
 
-    for (let i = 0; i < this._cells.length; i += 1) {
-      cells[i] = [];
 
-      for (let j = 0; j < y; j += 1) {
-        if (j < this._cells[0].length) { cells[i][j] = this._cells[i][j]; } else { cells[i][j] = new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */](); }
-      }
+    if (y < this._cells[0].length) {
+      this._cells.forEach(line => line.splice(y, Number.MAX_VALUE));
+    } else {
+      const newCells = Array.from({ length: y - this._cells[0].length }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]());
+
+      this._cells = this._cells.map(line =>
+        line.concat(JSON.parse(JSON.stringify(newCells))));
     }
-
-    this._cells = cells;
-
-
-    /* По требованиям нужно стараться работать с методами перебора массивов и не использовать циклов. 
-        Был такой вариант реализации, но на мой взгляд он менее читабельный и не быстрее чем с циклами. 
-        Причем для функции изменения ширины нужно будет дописать еще пару действий для этого варианта. 
-        Поэтому решил оставить как было с циклами.
-        
-            if(y < this._cells[0].length)
-            {
-                
-                this._cells.forEach((line) => line.splice(y, Number.MAX_VALUE) );
-            }    
-        else
-            {
-             
-                let amount = y - this._cells[0].length;
-                let newCells = []
-                for(let i = 0; i< amount; i+=1)
-                    newCells.push(new Cell() ); 
-                
-                this._cells = this._cells.map((line) => line = line.concat(JSON.parse(JSON.stringify(newCells))) );
-            }
-            
-            */
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Model;
 
 
+/*eslint-disable*/
 
+if (!Array.from) {
+  Array.from = (function() {
+    var toStr = Object.prototype.toString;
+    var isCallable = function(fn) {
+      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
+    };
+    var toInteger = function (value) {
+      var number = Number(value);
+      if (isNaN(number)) { return 0; }
+      if (number === 0 || !isFinite(number)) { return number; }
+      return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+    };
+    var maxSafeInteger = Math.pow(2, 53) - 1;
+    var toLength = function (value) {
+      var len = toInteger(value);
+      return Math.min(Math.max(len, 0), maxSafeInteger);
+    };
+
+    return function from(arrayLike/*, mapFn, thisArg */) {
+
+      var C = this;
+
+      var items = Object(arrayLike);
+
+      if (arrayLike == null) {
+        throw new TypeError('Array.from requires an array-like object - not null or undefined');
+      }
+
+      var mapFn = arguments[1];
+      if (typeof mapFn !== 'undefined') {
+        mapFn = arguments.length > 1 ? arguments[1] : void undefined;
+
+        if (!isCallable(mapFn)) {
+          throw new TypeError('Array.from: when provided, the second argument must be a function');
+        }
+
+        if (arguments.length > 2) {
+          T = arguments[2];
+        }
+      }
+
+      var len = toLength(items.length);
+
+      var A = isCallable(C) ? Object(new C(len)) : new Array(len);
+
+      var k = 0;
+
+      var kValue;
+      while (k < len) {
+        kValue = items[k];
+        if (mapFn) {
+          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+        } else {
+          A[k] = kValue;
+        }
+        k += 1;
+      }
+
+      A.length = len;
+
+      return A;
+    };
+  }());
+}
+
+/*eslint-disable*/
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

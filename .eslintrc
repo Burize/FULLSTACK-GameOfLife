@@ -9,6 +9,5 @@
       "allowShortCircuit": true,
       "allowTernary": true,
       "allowTaggedTemplates": true,
-    }],
-    "import/un-resolved": 0
+    }]
 }
