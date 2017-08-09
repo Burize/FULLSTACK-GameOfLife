@@ -1,6 +1,6 @@
 import Mustache from 'mustache';
-import './View.styl';
-import EventEmitter from './EventEmitter';
+import './View.styl';// eslint-disable-line
+import EventEmitter from './EventEmitter';// eslint-disable-line
 
 export default class View {
   constructor(width, height) {
@@ -10,24 +10,43 @@ export default class View {
 
     this.events = new EventEmitter();
 
-    const template = $('#game-template').html();
-    const output = $('.container');
+    const template = `
+    <main class="container">
+            <section class="controls">
+                <button class="controls__btn-start">Старт</button>
+                <button class="controls__btn-pause">Пауза</button>
+                <div class="controls__width">
+                    <span>Ширина: </span>
+                    <input class="controls__width-input" type="number" min="1" value={{width}} />
+                </div>
+                <div class="controls__height">
+                    <span>Высота: </span>
+                    <input class="controls__height-input" type="number" min="1" value={{height}} />
+                </div>
+            </section>
+            <section class="field">
+                <canvas class="field__canvas">
+            </section>
+    </main>
+        `;
+    const output = $('body');
     const data = { width, height };
     const html = Mustache.to_html(template, data);
     output.html(html);
 
-    this.buttonStart = output.find('.controls__btn-start')
+    this.buttonStart = output.find('.controls__btn-start').first()
       .click('click.buttonStart', () => this.events.emit('startGame'));
 
-    this.buttonPause = output.find('.controls__btn-pause')
+    this.buttonPause = output.find('.controls__btn-pause').first()
       .on('click.buttonPause', () => this.events.emit('pause'));
 
 
-    this.inputWidth = output.find('.controls__width-input')
+    this.inputWidth = output.find('.controls__width-input').first()
       .on('blur.inputWidth', function () {
         _this._width = this.value;
         _this._canvas.width = _this._width * _this.cellSize;
         _this.events.emit('changeWidth', this.value);
+        console.log('width is changed') // eslint-disable-line
       })
       .on('keyup.inputWidth', function (e) {
         if (this.value < 1) this.value = 1;
@@ -39,7 +58,7 @@ export default class View {
       });
 
 
-    this.inputHeight = output.find('.controls__height-input')
+    this.inputHeight = output.find('.controls__height-input').first()
       .on('blur.inputHeight', function () {
         _this._height = this.value;
         _this._canvas.height = _this._height * _this.cellSize;

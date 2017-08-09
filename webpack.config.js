@@ -28,20 +28,20 @@ module.exports = {
     
         rules:[
             {
-			test: /\.js$/,
-			include: [
+			    test: /\.js$/,
+			    include: [
 				path.join(__dirname, 'src/')
 			],
-            enforce: "pre",
-            options: {
+                enforce: "pre",
+                options: {
                 fix: true,
             },
-			loader: 'eslint-loader',
-			exclude: /node_modules/,
+			    loader: 'eslint-loader',
+			    exclude: /node_modules/,
 		    },
             {
                 test: /\.styl$/,
-                 loader: "style-loader!css-loader!autoprefixer-loader!stylus-loader",
+                loader: "style-loader!css-loader!autoprefixer-loader!stylus-loader",
                 exclude: [/node_modules/, /public/]
             },
             {

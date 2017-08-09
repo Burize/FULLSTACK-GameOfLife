@@ -50,7 +50,7 @@ describe('Controller', function(){
         });
         
         
-        var spy_endGame = sinon.spy(game, 'endGame');
+
         var spy_updateCells = sinon.spy(game._model, 'updateCells');
         var spy_reDraw = sinon.spy(game._view, 'reDraw');
         var spy_viewEndGame = sinon.spy(game._view, 'endGame');
@@ -61,8 +61,7 @@ describe('Controller', function(){
               setTimeout( function () {
                   
                   
-                    try { 
-                     //   assert.equal(spy_endGame.callCount, 0 );        
+                    try {        
                         assert.equal(spy_updateCells.callCount, 0 );
                         assert.equal(spy_reDraw.callCount, 0 );    
                         done(); 
@@ -81,10 +80,8 @@ describe('Controller', function(){
                   
                   
                     try {
-                       // assert.equal(spy_endGame.callCount, 1 );        
                         assert.equal(spy_updateCells.callCount, 1 );
                         assert.equal(spy_reDraw.callCount, 1 ); 
-                       // assert.isFalse(spy_endGame.returned(true))
                         assert.isFalse(game._pause) 
                        
                         done(); 
@@ -102,8 +99,7 @@ describe('Controller', function(){
                   
                   
                     try {
-                        //assert.isTrue(spy_endGame.returned(true)); 
-                        //sinon.assert.called(spy_viewEndGame);
+                        sinon.assert.called(spy_viewEndGame);
                         sinon.assert.called(spy_alertGame);
                         assert.isTrue(game._pause) ;
                         done(); 
@@ -234,7 +230,8 @@ describe('Controller', function(){
             assert.lengthOf(game._model._cells, 20);
             assert.lengthOf(game._model._cells[0], 20);
             
-            game._view.inputWidth.val(15).blur();
+            game._view.inputWidth.val(15).blur();  //<------------
+            $('.controls__width-input').val(15).blur(); //<------------
             
             sinon.assert.called(spy_changeWidth);
             sinon.assert.called(spy_modelChangeWidth);
