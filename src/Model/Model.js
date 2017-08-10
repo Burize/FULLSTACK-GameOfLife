@@ -5,7 +5,11 @@ function createField(x, y) {
 }
 
 function deepCopy(array) {
-  return array.map(line => line.map(cell => Object.assign({}, cell)));
+  return array.map(line => line.map((cell) => {
+    const newElement = Object.assign({}, cell);
+    newElement.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
+    return newElement;
+  }));
 }
 
 function arrayLengthCompare(array1, array2) {
@@ -36,11 +40,11 @@ export default class Model {
   }
 
   killCell(x, y) {
-    this._cells[x][y].alive = false;
+    this._cells[x][y].kill();
   }
 
   restoreCell(x, y) {
-    this._cells[x][y].alive = true;
+    this._cells[x][y].restore();
   }
 
   changeCell(x, y) {
