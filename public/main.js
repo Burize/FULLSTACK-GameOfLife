@@ -10431,13 +10431,12 @@ class Controller {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__EventEmitter__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Template__ = __webpack_require__(14);
 
-// eslint-disable-line
-// eslint-disable-line
+
+
 
 
 class View {
   constructor(width, height) {
-    const _this = this;
     this._width = width;
     this._height = height;
 
@@ -10448,41 +10447,25 @@ class View {
     const html = __WEBPACK_IMPORTED_MODULE_0_mustache___default.a.to_html(__WEBPACK_IMPORTED_MODULE_3__Template__["a" /* default */], data);
 
     $output.append($(html));
-      
+
     this.$buttonStart = $output.find('.controls__btn-start')
-      .click('click.buttonStart', () => this.events.emit('startGame'));
+      .click('click.buttonStart', this.startGame.bind(this));
 
     this.$buttonPause = $output.find('.controls__btn-pause')
-      .on('click.buttonPause', () => this.events.emit('pause'));
+      .on('click.buttonPause', this.pause.bind(this));
 
 
     this.$inputWidth = $output.find('.controls__width-input')
-      .on('blur.inputWidth', function () {
-        _this._width = this.value;
-        _this._canvas.width = _this._width * _this.cellSize;
-        _this.events.emit('changeWidth', this.value);
-      })
-      .on('keyup.inputWidth', function (e) {
-        if (this.value < 1) this.value = 1;
-
-        if (e.keyCode === 13) this.blur();
-      })
+      .on('blur.inputWidth', this.changeWidth.bind(this))
+      .on('keyup.inputWidth', this.inputKeyUp)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
 
 
     this.$inputHeight = $output.find('.controls__height-input')
-      .on('blur.inputHeight', function () {
-        _this._height = this.value;
-        _this._canvas.height = _this._height * _this.cellSize;
-        _this.events.emit('changeHeight', this.value);
-      })
-      .on('keyup.inputHeight', function (e) {
-        if (this.value < 1) this.value = 1;
-
-        if (e.keyCode === 13) this.blur();
-      })
+      .on('blur.inputHeight', this.changeHeight.bind(this))
+      .on('keyup.inputHeight', this.inputKeyUp)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
@@ -10528,9 +10511,30 @@ class View {
   }
   /* eslint-disable class-methods-use-this, no-undef */
 
-  changeWidth() {
 
+  startGame() {
+    this.events.emit('startGame');
+  }
 
+  pause() {
+    this.events.emit('pause');
+  }
+  changeWidth(e) {
+    this._width = e.currentTarget.value;
+    this._canvas.width = this._width * this.cellSize;
+    this.events.emit('changeWidth', e.currentTarget.value);
+  }
+
+  changeHeight(e) {
+    this._height = e.currentTarget.value;
+    this._canvas.height = this._height * this.cellSize;
+    this.events.emit('changeHeight', e.currentTarget.value);
+  }
+
+  inputKeyUp(e) {
+    if (e.currentTarget.value < 1) e.currentTarget.value = 1;
+
+    if (e.keyCode === 13) e.currentTarget.blur();
   }
   endGame() {
     alert('Игра завершена!');
