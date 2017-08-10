@@ -8,13 +8,13 @@ export default class Controller {
 
     this._gameTimer; // eslint-disable-line no-unused-expressions
 
-    this._pause = true;
+    this._isPause = true;
 
     this._view = new View(x, y);
 
     this._view.events.subscribe('startGame', () => this.startGame.call(this));
 
-    this._view.events.subscribe('pause', () => this.pauseClick.call(this));
+    this._view.events.subscribe('pause', () => this.pauseGame.call(this));
 
     this._view.events.subscribe('fieldClick', coordinates => this.fieldClick.call(this, coordinates));
 
@@ -26,14 +26,14 @@ export default class Controller {
   startGame() {
     const _this = this;
 
-    if (_this._pause) {
-      _this._pause = false;
+    if (_this._isPause) {
+      _this._isPause = false;
 
       _this._gameTimer = setTimeout(function tick() {
         _this._model.updateCells();
 
-        if (!_this._model.fieldChange) {
-          _this._pause = true;
+        if (!_this._model.isFieldChange) {
+          _this.isPause = true;
           _this._view.endGame();
           return;
         }
@@ -45,13 +45,13 @@ export default class Controller {
     }
   }
 
-  pauseClick() {
-    this._pause = true;
+  pauseGame() {
+    this._isPause = true;
     clearTimeout(this._gameTimer);
   }
 
   fieldClick(coordinates) {
-    if (this._pause) {
+    if (this._isPause) {
       this._model.changeCell(coordinates.x, coordinates.y);
       this._view.reDraw(this._model.getCells());
     }

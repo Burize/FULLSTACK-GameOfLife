@@ -1,11 +1,12 @@
 import Cell from './Cell';
 
-function arrayLengthCompare(array1, array2) {
-  if (array1.length === array2.length || array1[0].length === array2[0].length) { return true; }
-
-  return false;
+function deepCopy(array) {
+  return array.map(line => line.map(cell => Object.assign({}, cell)));
 }
 
+function arrayLengthCompare(array1, array2) {
+  return Boolean(array1.length === array2.length || array1[0].length === array2[0].length);
+}
 
 function isFieldChange(previousField, currentField) {
   if (!arrayLengthCompare(previousField, currentField)) { return true; }
@@ -20,20 +21,20 @@ function updateCell(neighbors, cell) {
 }
 
 function sizeValidate(size) {
-  if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
+  if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return parseInt(size, 10); }
   return 1;
 }
 
 export default class Model {
   constructor(x, y) {
-    this.fieldChange = false;
+    this.isFieldChange = false;
 
     this._cells = Array.from({ length: x }, () => Array.from({ length: y }, () => new Cell()));
   }
 
 
   getCells() {
-    return JSON.parse(JSON.stringify(this._cells));
+    return deepCopy(this._cells);
   }
 
   killCell(x, y) {
@@ -87,7 +88,7 @@ export default class Model {
   }
 
   updateCells() {
-    const previousfield = JSON.parse(JSON.stringify(this._cells));
+    const previousField = JSON.parse(JSON.stringify(this._cells));
 
     this._cells = this._cells.map((line, x) => line.map((cell, y) => {
       const neighbors = this.countNeighbors(x, y);
@@ -96,7 +97,7 @@ export default class Model {
     }));
 
 
-    this.fieldChange = isFieldChange(previousfield, this._cells);
+    this.isFieldChange = isFieldChange(previousField, this._cells);
   }
 
   changeWidth(_x) {

@@ -1,7 +1,7 @@
 import Mustache from 'mustache';
 import './View.styl';
 import EventEmitter from './EventEmitter';
-import template from './Template';
+import template from './template.mustache';
 
 export default class View {
   constructor(width, height) {
@@ -20,7 +20,7 @@ export default class View {
       .click('click.buttonStart', this.startGame.bind(this));
 
     this.$buttonPause = $output.find('.controls__btn-pause')
-      .on('click.buttonPause', this.pause.bind(this));
+      .on('click.buttonPause', this.pauseGame.bind(this));
 
 
     this.$inputWidth = $output.find('.controls__width-input')
@@ -84,7 +84,7 @@ export default class View {
     this.events.emit('startGame');
   }
 
-  pause() {
+  pauseGame() {
     this.events.emit('pause');
   }
   changeWidth(e) {

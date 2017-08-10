@@ -44,7 +44,7 @@
  
  ## View
  
- Рендерит html разметку при помощи [шаблона](src/View/Template.js) (в качестве шаблонизатора используется [mustache](https://github.com/janl/mustache.js)).
+ Рендерит html разметку при помощи [шаблона](src/View/template.mustache) (в качестве шаблонизатора используется [mustache](https://github.com/janl/mustache.js)).
  
  Для тестирования и дальнейшего расширения DOM-объекты сгенерированной html разметки сохранены во View в качестве полей объекта:
  - buttonStart - кнопка начала/продолжения игры;
