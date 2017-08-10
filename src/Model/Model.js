@@ -49,39 +49,23 @@ export default class Model {
     this._cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y);
   }
 
-  countNeighbors(x, y) {
+  countNeighbors(_x, _y) {
     let neighbors = 0;
 
-    if (x > 0 && y > 0) {
-      neighbors += this._cells[x - 1][y - 1].alive;
-    }
+    const dx = [-1, -1, -1, 0, 0, 1, 1, 1];
+    const dy = [-1, 0, 1, -1, 1, -1, 0, 1];
 
-    if (x > 0) {
-      neighbors += this._cells[x - 1][y].alive;
-    }
 
-    if (x > 0 && y < this._cells[0].length - 1) {
-      neighbors += this._cells[x - 1][y + 1].alive;
-    }
+    for (let i = 0; i < dx.length; i += 1) {
+      const x = _x + dx[i];
+      const y = _y + dy[i];
 
-    if (y > 0) {
-      neighbors += this._cells[x][y - 1].alive;
-    }
 
-    if (y < this._cells[0].length - 1) {
-      neighbors += this._cells[x][y + 1].alive;
-    }
-
-    if (x < this._cells.length - 1 && y > 0) {
-      neighbors += this._cells[x + 1][y - 1].alive;
-    }
-
-    if (x < this._cells.length - 1) {
-      neighbors += this._cells[x + 1][y].alive;
-    }
-
-    if (x < this._cells.length - 1 && y < this._cells[0].length - 1) {
-      neighbors += this._cells[x + 1][y + 1].alive;
+      if (x >= 0 && x < this._cells.length && y >= 0 && y < this._cells[0].length) {
+        if (this._cells[x][y].alive === true) {
+          neighbors += 1;
+        }
+      }
     }
 
     return neighbors;

@@ -33,8 +33,9 @@ export default class Controller {
         _this._model.updateCells();
 
         if (!_this._model.isFieldChange) {
-          _this.isPause = true;
+          _this._isPause = true;
           _this._view.endGame();
+
           return;
         }
 
