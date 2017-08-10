@@ -44,7 +44,7 @@ export default class Model {
   }
 
   changeCell(x, y) {
-    this._cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y);
+    if (this._cells[x][y].alive) { this.killCell(x, y); } else { this.restoreCell(x, y); }
   }
   updateCell(_x, _y) {
     let neighbors = 0;
