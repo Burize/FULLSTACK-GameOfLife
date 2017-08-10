@@ -14,12 +14,6 @@ function isFieldChange(previousField, currentField) {
   return currentField.some((column, x) => column.some((cell, y) => cell.alive !== previousField[x][y].alive)); // eslint-disable-line max-len
 }
 
-function updateCell(neighbors, cell) {
-  if (neighbors === 3 || neighbors === 2 && cell.alive === true) return new Cell(true); // eslint-disable-line 
-
-  return new Cell();
-}
-
 function sizeValidate(size) {
   if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return parseInt(size, 10); }
   return 1;
@@ -48,8 +42,7 @@ export default class Model {
   changeCell(x, y) {
     this._cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y);
   }
-
-  countNeighbors(_x, _y) {
+  updateCell(_x, _y) {
     let neighbors = 0;
 
     const dx = [-1, -1, -1, 0, 0, 1, 1, 1];
@@ -60,7 +53,6 @@ export default class Model {
       const x = _x + dx[i];
       const y = _y + dy[i];
 
-
       if (x >= 0 && x < this._cells.length && y >= 0 && y < this._cells[0].length) {
         if (this._cells[x][y].alive === true) {
           neighbors += 1;
@@ -68,18 +60,15 @@ export default class Model {
       }
     }
 
-    return neighbors;
+  if (neighbors === 3 || neighbors === 2 && this._cells[_x][_y].alive === true) return new Cell(true); // eslint-disable-line 
+
+    return new Cell();
   }
 
   updateCells() {
-    const previousField = JSON.parse(JSON.stringify(this._cells));
+    const previousField = deepCopy(this._cells);
 
-    this._cells = this._cells.map((line, x) => line.map((cell, y) => {
-      const neighbors = this.countNeighbors(x, y);
-
-      return updateCell(neighbors, cell);
-    }));
-
+    this._cells = this._cells.map((line, x) => line.map((cell, y) => this.updateCell(x, y)));
 
     this.isFieldChange = isFieldChange(previousField, this._cells);
   }
@@ -108,7 +97,7 @@ export default class Model {
       const newCells = Array.from({ length: y - this._cells[0].length }, () => new Cell());
 
       this._cells = this._cells.map(line =>
-        line.concat(JSON.parse(JSON.stringify(newCells))));
+        line.concat(deepCopy(newCells)));
     }
   }
 }
