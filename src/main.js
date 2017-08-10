@@ -1,3 +1,4 @@
+import './Polyfills/arrayFrom';
 import GameOfLife from './Controller/Controller';
 
 
