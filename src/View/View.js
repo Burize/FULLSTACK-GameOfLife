@@ -1,7 +1,7 @@
 import Mustache from 'mustache';
 import './View.styl';
-import EventEmitter from './EventEmitter';
 import template from './template.mustache';
+import EventEmitter from '../Shared/EventEmitter';
 
 export default class View {
   constructor(width, height) {
