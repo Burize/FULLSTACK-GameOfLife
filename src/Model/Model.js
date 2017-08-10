@@ -1,5 +1,9 @@
 import Cell from './Cell';
 
+function createField(x, y) {
+  return Array.from({ length: x }, () => Array.from({ length: y }, () => new Cell()));
+}
+
 function deepCopy(array) {
   return array.map(line => line.map(cell => Object.assign({}, cell)));
 }
@@ -23,7 +27,7 @@ export default class Model {
   constructor(x, y) {
     this.isFieldChange = false;
 
-    this._cells = Array.from({ length: x }, () => Array.from({ length: y }, () => new Cell()));
+    this._cells = createField(x, y);
   }
 
 
@@ -80,10 +84,7 @@ export default class Model {
     if (x < this._cells.length) {
       this._cells.splice(x, Number.MAX_VALUE);
     } else {
-      const newColumns = x - this._cells.length;
-      for (let i = 0; i < newColumns; i += 1) {
-        this._cells.push(Array.from({ length: this._cells[0].length }, () => new Cell()));
-      }
+      this._cells = this._cells.concat(createField(x - this._cells.length, this._cells[0].length));
     }
   }
 
