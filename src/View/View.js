@@ -39,7 +39,9 @@ export default class View {
       });
 
 
-    this._canvas = $output.find('canvas')[0];
+    this._canvas = $output.find('#field__canvas');
+
+    if (this._canvas.length !== 1) { throw new RangeError(`Expected get 1 canvas instead ${this._canvas.length}`); } else { this._canvas = this._canvas[0]; }
 
     this.cellSize = parseFloat($output.find('.field').css('font-size'));
 
