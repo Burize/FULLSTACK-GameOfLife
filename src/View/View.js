@@ -18,28 +18,9 @@ export default class View {
 
     this.cellSize = parseFloat($output.find('.field').css('font-size'));
 
-    this.$buttonStart = $output.find('.controls__btn-start')
-      .click('click.buttonStart', this.startGame.bind(this));
+    this.findControls($output);
 
-    this.$buttonPause = $output.find('.controls__btn-pause')
-      .on('click.buttonPause', this.pauseGame.bind(this));
-
-
-    this.$inputWidth = $output.find('.controls__width-input')
-      .on('blur.inputWidth', this.changeWidth.bind(this))
-      .on('keyup.inputWidth', this.inputKeyUp)
-      .on('click.mozillaSpecial', function () {
-        $(this).focus();
-      });
-
-
-    this.$inputHeight = $output.find('.controls__height-input')
-      .on('blur.inputHeight', this.changeHeight.bind(this))
-      .on('keyup.inputHeight', this.inputKeyUp)
-      .on('click.mozillaSpecial', function () {
-        $(this).focus();
-      });
-
+    this.setControlsHandlers();
 
     this._canvas = $output.find('#field__canvas');
 
@@ -51,6 +32,36 @@ export default class View {
     }
   }
 
+  findControls(root) {
+    this.$buttonStart = root.find('.controls__btn-start');
+    this.$buttonPause = root.find('.controls__btn-pause');
+    this.$inputWidth = root.find('.controls__width-input');
+    this.$inputHeight = root.find('.controls__height-input');
+  }
+
+  setControlsHandlers() {
+    this.$buttonStart
+      .click('click.buttonStart', this.startGame.bind(this));
+
+    this.$buttonPause
+      .on('click.buttonPause', this.pauseGame.bind(this));
+
+
+    this.$inputWidth
+      .on('blur.inputWidth', this.changeWidth.bind(this))
+      .on('keyup.inputWidth', this.inputKeyUp)
+      .on('click.mozillaSpecial', function () {
+        $(this).focus();
+      });
+
+
+    this.$inputHeight
+      .on('blur.inputHeight', this.changeHeight.bind(this))
+      .on('keyup.inputHeight', this.inputKeyUp)
+      .on('click.mozillaSpecial', function () {
+        $(this).focus();
+      });
+  }
   createCanvas() {
     this._canvas.width = this._width * this.cellSize;
     this._canvas.height = this._height * this.cellSize;
