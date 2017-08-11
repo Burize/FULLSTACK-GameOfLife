@@ -5,11 +5,21 @@ function createField(x, y) {
 }
 
 function deepCopy(array) {
-  return array.map(line => line.map((cell) => {
-    const newElement = Object.assign({}, cell);
-    newElement.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
+  return array.map((line) => {
+    let newElement;
+
+    if (Array.isArray(line)) {
+      newElement = line.map((cell) => {
+        const newCell = Object.assign({}, cell);
+        newCell.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
+        return newCell;
+      });
+    } else {
+      newElement = Object.assign({}, line);
+      newElement.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
+    }
     return newElement;
-  }));
+  });
 }
 
 function arrayLengthCompare(array1, array2) {

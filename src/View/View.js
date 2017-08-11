@@ -41,14 +41,14 @@ export default class View {
 
   setControlsHandlers() {
     this.$buttonStart
-      .click('click.buttonStart', this.startGame.bind(this));
+      .on('click.buttonStart', { view: this }, this.startGame);
 
     this.$buttonPause
-      .on('click.buttonPause', this.pauseGame.bind(this));
+      .on('click.buttonPause', { view: this }, this.pauseGame);
 
 
     this.$inputWidth
-      .on('blur.inputWidth', this.changeWidth.bind(this))
+      .on('blur.inputWidth', { field: this }, this.changeWidth)
       .on('keyup.inputWidth', this.inputKeyUp)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
@@ -56,12 +56,13 @@ export default class View {
 
 
     this.$inputHeight
-      .on('blur.inputHeight', this.changeHeight.bind(this))
+      .on('blur.inputHeight', { field: this }, this.changeHeight)
       .on('keyup.inputHeight', this.inputKeyUp)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
   }
+
   createCanvas() {
     this._canvas.width = this._width * this.cellSize;
     this._canvas.height = this._height * this.cellSize;
@@ -99,23 +100,23 @@ export default class View {
   /* eslint-disable class-methods-use-this, no-undef */
 
 
-  startGame() {
-    this.events.emit('startGame');
+  startGame(e) {
+    e.data.view.events.emit('startGame');
   }
 
-  pauseGame() {
-    this.events.emit('pause');
+  pauseGame(e) {
+    e.data.view.events.emit('pause');
   }
   changeWidth(e) {
-    this._width = e.currentTarget.value;
-    this._canvas.width = this._width * this.cellSize;
-    this.events.emit('changeWidth', e.currentTarget.value);
+    e.data.field._width = e.currentTarget.value;
+    e.data.field._canvas.width = e.data.field._width * e.data.field.cellSize;
+    e.data.field.events.emit('changeWidth', e.currentTarget.value);
   }
 
   changeHeight(e) {
-    this._height = e.currentTarget.value;
-    this._canvas.height = this._height * this.cellSize;
-    this.events.emit('changeHeight', e.currentTarget.value);
+    e.data.field._height = e.currentTarget.value;
+    e.data.field._canvas.height = e.data.field._height * e.data.field.cellSize;
+    e.data.field.events.emit('changeHeight', e.currentTarget.value);
   }
 
   inputKeyUp(e) {
