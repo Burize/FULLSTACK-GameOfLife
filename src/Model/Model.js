@@ -5,21 +5,11 @@ function createField(x, y) {
 }
 
 function deepCopy(array) {
-  return array.map((line) => {
-    let newElement;
-
-    if (Array.isArray(line)) {
-      newElement = line.map((cell) => {
-        const newCell = Object.assign({}, cell);
-        newCell.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
-        return newCell;
-      });
-    } else {
-      newElement = Object.assign({}, line);
-      newElement.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
-    }
+  return array.map(line => line.map((cell) => {
+    const newElement = Object.assign({}, cell);
+    newElement.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
     return newElement;
-  });
+  }));
 }
 
 function arrayLengthCompare(array1, array2) {
@@ -112,10 +102,8 @@ export default class Model {
     if (y < this._cells[0].length) {
       this._cells.forEach(line => line.splice(y, Number.MAX_VALUE));
     } else {
-      const newCells = Array.from({ length: y - this._cells[0].length }, () => new Cell());
-
       this._cells = this._cells.map(line =>
-        line.concat(deepCopy(newCells)));
+        line.concat(Array.from({ length: y - this._cells[0].length }, () => new Cell())));
     }
   }
 }
