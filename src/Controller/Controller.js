@@ -12,38 +12,50 @@ export default class Controller {
 
     this._view = new View(x, y);
 
-    this._view.events.subscribe('startGame', () => this.startGame.call(this));
+    this.updateField = this.updateField.bind(this);
 
-    this._view.events.subscribe('pause', () => this.pauseGame.call(this));
+    this.startGame = this.startGame.bind(this);
 
-    this._view.events.subscribe('fieldClick', coordinates => this.fieldClick.call(this, coordinates));
+    this.pauseGame = this.pauseGame.bind(this);
 
-    this._view.events.subscribe('changeWidth', width => this.changeWidth.call(this, width));
+    this.fieldClick = this.fieldClick.bind(this);
 
-    this._view.events.subscribe('changeHeight', height => this.changeHeight.call(this, height));
+    this.changeWidth = this.changeWidth.bind(this);
+
+    this.changeHeight = this.changeHeight.bind(this);
+
+    this._view.events.subscribe('startGame', this.startGame);
+
+    this._view.events.subscribe('pause', this.pauseGame);
+
+    this._view.events.subscribe('fieldClick', this.fieldClick);
+
+    this._view.events.subscribe('changeWidth', this.changeWidth);
+
+    this._view.events.subscribe('changeHeight', this.changeHeight);
   }
 
   startGame() {
-    const _this = this;
+    if (this._isPause) {
+      this._isPause = false;
 
-    if (_this._isPause) {
-      _this._isPause = false;
-
-      _this._gameTimer = setTimeout(function tick() {
-        _this._model.updateCells();
-
-        if (!_this._model.isFieldChange) {
-          _this._isPause = true;
-          _this._view.endGame();
-
-          return;
-        }
-
-        _this._view.reDraw(_this._model.getCells());
-
-        _this._gameTimer = setTimeout(tick, 300);
-      }, 300);
+      this._gameTimer = setTimeout(this.updateField, 300);
     }
+  }
+
+  updateField() {
+    this._model.updateCells();
+
+    if (!this._model.isFieldChange) {
+      this._isPause = true;
+      this._view.endGame();
+
+      return;
+    }
+
+    this._view.reDraw(this._model.getCells());
+
+    this._gameTimer = setTimeout(this.updateField, 300);
   }
 
   pauseGame() {
