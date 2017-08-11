@@ -10,7 +10,7 @@ module.exports = function (config) {
         'node_modules/jquery/dist/jquery.js', 
         'node_modules/Canteen/build/canteen.js',
         'node_modules/chai/chai.js',
-      'test/*.js'
+      'test/controller.spec.js'
     ],
     exclude: [
     ],

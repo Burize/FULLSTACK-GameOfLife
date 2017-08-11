@@ -12,27 +12,30 @@ export default class Controller {
 
     this._view = new View(x, y);
 
-    this.updateField = this.updateField.bind(this);
+    /* eslint-disable no-proto */
+    this.__proto__.updateField = this.updateField.bind(this);
 
-    this.startGame = this.startGame.bind(this);
+    this.__proto__.startGame = this.startGame.bind(this);
 
-    this.pauseGame = this.pauseGame.bind(this);
+    this.__proto__.pauseGame = this.pauseGame.bind(this);
 
-    this.fieldClick = this.fieldClick.bind(this);
+    this.__proto__.changeCell = this.changeCell.bind(this);
 
-    this.changeWidth = this.changeWidth.bind(this);
+    this.__proto__.changeWidth = this.changeWidth.bind(this);
 
     this.changeHeight = this.changeHeight.bind(this);
-
+    /* eslint-enable */
     this._view.events.subscribe('startGame', this.startGame);
 
     this._view.events.subscribe('pause', this.pauseGame);
 
-    this._view.events.subscribe('fieldClick', this.fieldClick);
+    this._view.events.subscribe('changeCell', this.changeCell);
 
     this._view.events.subscribe('changeWidth', this.changeWidth);
 
     this._view.events.subscribe('changeHeight', this.changeHeight);
+
+    console.log(this);
   }
 
   startGame() {
@@ -63,7 +66,7 @@ export default class Controller {
     clearTimeout(this._gameTimer);
   }
 
-  fieldClick(coordinates) {
+  changeCell(coordinates) {
     if (this._isPause) {
       this._model.changeCell(coordinates.x, coordinates.y);
       this._view.reDraw(this._model.getCells());

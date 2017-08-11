@@ -49,7 +49,8 @@ export default class View {
 
     this.$inputWidth
       .on('blur.inputWidth', { field: this }, this.changeWidth)
-      .on('keyup.inputWidth', this.inputKeyUp)
+      .on('keyup.inputWidthValueValidate', this.positiveValue)
+      .on('keyup.inputWidthEnter', this.blurOnEnter)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
@@ -57,7 +58,8 @@ export default class View {
 
     this.$inputHeight
       .on('blur.inputHeight', { field: this }, this.changeHeight)
-      .on('keyup.inputHeight', this.inputKeyUp)
+      .on('keyup.inputHeightValueValidate', this.positiveValue)
+      .on('keyup.inputHeightEnter', this.blurOnEnter)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
@@ -77,7 +79,7 @@ export default class View {
       }
     }
 
-    $(this._canvas).click(e => this.events.emit('fieldClick', { x: parseInt(e.offsetX / this.cellSize, 10),
+    $(this._canvas).click(e => this.events.emit('changeCell', { x: parseInt(e.offsetX / this.cellSize, 10),
       y: parseInt(e.offsetY / this.cellSize, 10) }));
   }
 
@@ -118,9 +120,11 @@ export default class View {
     e.data.field.events.emit('changeHeight', $(e.currentTarget).val());
   }
 
-  inputKeyUp(e) {
+  positiveValue(e) {
     if (e.currentTarget.value < 1) $(e.currentTarget).val(1);
+  }
 
+  blurOnEnter(e) {
     if (e.keyCode === 13) $(e.currentTarget).blur();
   }
 

@@ -96,7 +96,7 @@ export default class Model {
 
   changeWidth(_x) {
     const x = sizeValidate(_x);
-
+    console.log('asd');
 
     if (x < this._cells.length) {
       this._cells.splice(x, Number.MAX_VALUE);
