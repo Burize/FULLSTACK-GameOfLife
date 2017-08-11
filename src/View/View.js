@@ -97,9 +97,8 @@ export default class View {
       });
     });
   }
-  /* eslint-disable class-methods-use-this, no-undef */
 
-
+  /* eslint-disable class-methods-use-this, */
   startGame(e) {
     e.data.view.events.emit('startGame');
   }
@@ -108,23 +107,25 @@ export default class View {
     e.data.view.events.emit('pause');
   }
   changeWidth(e) {
-    e.data.field._width = e.currentTarget.value;
+    e.data.field._width = $(e.currentTarget).val();
     e.data.field._canvas.width = e.data.field._width * e.data.field.cellSize;
-    e.data.field.events.emit('changeWidth', e.currentTarget.value);
+    e.data.field.events.emit('changeWidth', $(e.currentTarget).val());
   }
 
   changeHeight(e) {
-    e.data.field._height = e.currentTarget.value;
+    e.data.field._height = $(e.currentTarget).val();
     e.data.field._canvas.height = e.data.field._height * e.data.field.cellSize;
-    e.data.field.events.emit('changeHeight', e.currentTarget.value);
+    e.data.field.events.emit('changeHeight', $(e.currentTarget).val());
   }
 
   inputKeyUp(e) {
-    if (e.currentTarget.value < 1) e.currentTarget.value = 1;
+    if (e.currentTarget.value < 1) $(e.currentTarget).val(1);
 
-    if (e.keyCode === 13) e.currentTarget.blur();
+    if (e.keyCode === 13) $(e.currentTarget).blur();
   }
+
   endGame() {
-    alert('Игра завершена!');
+    alert('Игра завершена!'); // eslint-disable-line no-undef
   }
+  /* eslint-enable */
 }
