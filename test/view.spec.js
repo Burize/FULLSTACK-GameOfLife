@@ -42,7 +42,7 @@ describe('View', function(){
                         newField[i][j]= new Cell();    
             }
 
-            newField[2][3].alive = true;
+            newField[2][3]._alive = true;
 
             view.reDraw(newField);
 
@@ -79,7 +79,7 @@ describe('View', function(){
                         newField[i][j]= new Cell();    
             }
 
-            newField[6][3].alive = true;
+            newField[6][3]._alive = true;
 
             view.reDraw(newField);
 

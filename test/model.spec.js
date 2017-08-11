@@ -66,14 +66,14 @@ describe('Model', function() {
         
         it('dead cell should be dead after execute', function() {
             
-            model._cells[0][0].alive = false;
+            model._cells[0][0]._alive = false;
             model.killCell(0,0);
             assert.isFalse(model._cells[0][0].alive );
         });
 
         it('alive cell should be dead after execute', function() {
 
-            model._cells[0][0].alive = true;
+            model._cells[0][0]._alive = true;
             model.killCell(0,0);
             assert.isFalse(model._cells[0][0].alive );
         });
@@ -87,7 +87,7 @@ describe('Model', function() {
         
         it('dead cell should be alive after execute', function() {
 
-            model._cells[0][0].alive = false;
+            model._cells[0][0]._alive = false;
             model.restoreCell(0,0);
             assert.isTrue(model._cells[0][0].alive);
         });
@@ -95,45 +95,12 @@ describe('Model', function() {
         it('alive cell should be alive after execute', function() {
 
             
-            model._cells[0][0].alive = true;
+            model._cells[0][0]._alive = true;
             model.restoreCell(0,0);
             assert.isTrue(model._cells[0][0].alive);
         });
         
   });
-     
-  
-    describe('CountHeighbors', function() {
-        
-        var model = new Model(3,3);
-        
-        model.restoreCell(0,0);
-        model.restoreCell(1,0);
-        model.restoreCell(0,1);
-
-        
-        it('should return 3', function() {
-
-            assert.equal(model.countNeighbors(1,1), 3);
-        });
-
-        it('should return 2', function() {
-
-            assert.equal(model.countNeighbors(0,0), 2);
-        });
-        
-        it('should return 1', function() {
-
-            assert.equal(model.countNeighbors(0,2), 1);
-        });
-        
-        it('should return 0', function() {
-
-            assert.equal(model.countNeighbors(2,2), 0);
-        });
-        
-  });
-    
      
     describe('UpdateCells', function(){
        

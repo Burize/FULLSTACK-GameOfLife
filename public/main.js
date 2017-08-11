@@ -10329,23 +10329,99 @@ return jQuery;
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Controller_Controller__ = __webpack_require__(2);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Polyfills_arrayFrom__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Polyfills_arrayFrom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Polyfills_arrayFrom__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Controller_Controller__ = __webpack_require__(3);
+
 
 
 
 $(() => {
-  const _GameOfLife = new __WEBPACK_IMPORTED_MODULE_0__Controller_Controller__["a" /* default */](20, 20); // eslint-disable-line no-unused-vars
+  const _gameOfLife = new __WEBPACK_IMPORTED_MODULE_1__Controller_Controller__["a" /* default */](20, 20); // eslint-disable-line no-unused-vars
 });
 
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+/*eslint-disable*/
+
+if (!Array.from) {
+  Array.from = (function() {
+    var toStr = Object.prototype.toString;
+    var isCallable = function(fn) {
+      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
+    };
+    var toInteger = function (value) {
+      var number = Number(value);
+      if (isNaN(number)) { return 0; }
+      if (number === 0 || !isFinite(number)) { return number; }
+      return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+    };
+    var maxSafeInteger = Math.pow(2, 53) - 1;
+    var toLength = function (value) {
+      var len = toInteger(value);
+      return Math.min(Math.max(len, 0), maxSafeInteger);
+    };
+
+    return function from(arrayLike/*, mapFn, thisArg */) {
+
+      var C = this;
+
+      var items = Object(arrayLike);
+
+      if (arrayLike == null) {
+        throw new TypeError('Array.from requires an array-like object - not null or undefined');
+      }
+
+      var mapFn = arguments[1];
+      if (typeof mapFn !== 'undefined') {
+        mapFn = arguments.length > 1 ? arguments[1] : void undefined;
+
+        if (!isCallable(mapFn)) {
+          throw new TypeError('Array.from: when provided, the second argument must be a function');
+        }
+
+        if (arguments.length > 2) {
+          T = arguments[2];
+        }
+      }
+
+      var len = toLength(items.length);
+
+      var A = isCallable(C) ? Object(new C(len)) : new Array(len);
+
+      var k = 0;
+
+      var kValue;
+      while (k < len) {
+        kValue = items[k];
+        if (mapFn) {
+          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
+        } else {
+          A[k] = kValue;
+        }
+        k += 1;
+      }
+
+      A.length = len;
+
+      return A;
+    };
+  }());
+}
+
+/*eslint-disable*/
+
+/***/ }),
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__View_View__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Model_Model__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__View_View__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Model_Model__ = __webpack_require__(16);
 
 
 
@@ -10356,50 +10432,63 @@ class Controller {
 
     this._gameTimer; // eslint-disable-line no-unused-expressions
 
-    this._pause = true;
+    this._isPause = true;
 
     this._view = new __WEBPACK_IMPORTED_MODULE_0__View_View__["a" /* default */](x, y);
 
-    this._view.events.subscribe('startGame', () => this.startGame.call(this));
+    this.updateField = this.updateField.bind(this);
 
-    this._view.events.subscribe('pause', () => this.pauseClick.call(this));
+    this.startGame = this.startGame.bind(this);
 
-    this._view.events.subscribe('fieldClick', coordinates => this.fieldClick.call(this, coordinates));
+    this.pauseGame = this.pauseGame.bind(this);
 
-    this._view.events.subscribe('changeWidth', width => this.changeWidth.call(this, width));
+    this.fieldClick = this.fieldClick.bind(this);
 
-    this._view.events.subscribe('changeHeight', height => this.changeHeight.call(this, height));
+    this.changeWidth = this.changeWidth.bind(this);
+
+    this.changeHeight = this.changeHeight.bind(this);
+
+    this._view.events.subscribe('startGame', this.startGame);
+
+    this._view.events.subscribe('pause', this.pauseGame);
+
+    this._view.events.subscribe('fieldClick', this.fieldClick);
+
+    this._view.events.subscribe('changeWidth', this.changeWidth);
+
+    this._view.events.subscribe('changeHeight', this.changeHeight);
   }
 
   startGame() {
-    const _this = this;
+    if (this._isPause) {
+      this._isPause = false;
 
-    if (_this._pause) {
-      _this._pause = false;
-
-      _this._gameTimer = setTimeout(function tick() {
-        _this._model.updateCells();
-
-        if (!_this._model.fieldChange) {
-          _this._pause = true;
-          _this._view.endGame();
-          return;
-        }
-
-        _this._view.reDraw(_this._model.getCells());
-
-        _this._gameTimer = setTimeout(tick, 300);
-      }, 300);
+      this._gameTimer = setTimeout(this.updateField, 300);
     }
   }
 
-  pauseClick() {
-    this._pause = true;
+  updateField() {
+    this._model.updateCells();
+
+    if (!this._model.isFieldChange) {
+      this._isPause = true;
+      this._view.endGame();
+
+      return;
+    }
+
+    this._view.reDraw(this._model.getCells());
+
+    this._gameTimer = setTimeout(this.updateField, 300);
+  }
+
+  pauseGame() {
+    this._isPause = true;
     clearTimeout(this._gameTimer);
   }
 
   fieldClick(coordinates) {
-    if (this._pause) {
+    if (this._isPause) {
       this._model.changeCell(coordinates.x, coordinates.y);
       this._view.reDraw(this._model.getCells());
     }
@@ -10420,16 +10509,16 @@ class Controller {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mustache__ = __webpack_require__(4);
+/* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mustache__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mustache___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_mustache__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__View_styl__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__View_styl__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__View_styl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__View_styl__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__EventEmitter__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Template__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__template_mustache__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Shared_EventEmitter__ = __webpack_require__(15);
 
 
 
@@ -10440,41 +10529,62 @@ class View {
     this._width = width;
     this._height = height;
 
-    this.events = new __WEBPACK_IMPORTED_MODULE_2__EventEmitter__["a" /* default */]();
+    this.events = new __WEBPACK_IMPORTED_MODULE_3__Shared_EventEmitter__["a" /* default */]();
 
     const $output = $('body');
     const data = { width, height };
-    const html = __WEBPACK_IMPORTED_MODULE_0_mustache___default.a.to_html(__WEBPACK_IMPORTED_MODULE_3__Template__["a" /* default */], data);
+    const html = __WEBPACK_IMPORTED_MODULE_0_mustache___default.a.to_html(__WEBPACK_IMPORTED_MODULE_2__template_mustache__["a" /* default */], data);
 
     $output.append($(html));
 
-    this.$buttonStart = $output.find('.controls__btn-start')
-      .click('click.buttonStart', this.startGame.bind(this));
+    this.cellSize = parseFloat($output.find('.field').css('font-size'));
 
-    this.$buttonPause = $output.find('.controls__btn-pause')
-      .on('click.buttonPause', this.pause.bind(this));
+    this.findControls($output);
+
+    this.setControlsHandlers();
+
+    this._canvas = $output.find('#field__canvas');
+
+    if (this._canvas.length !== 1) {
+      throw new RangeError(`Expected get 1 canvas instead ${this._canvas.length}`);
+    } else {
+      this._canvas = this._canvas[0];
+      this.createCanvas();
+    }
+  }
+
+  findControls(root) {
+    this.$buttonStart = root.find('.controls__btn-start');
+    this.$buttonPause = root.find('.controls__btn-pause');
+    this.$inputWidth = root.find('.controls__width-input');
+    this.$inputHeight = root.find('.controls__height-input');
+  }
+
+  setControlsHandlers() {
+    this.$buttonStart
+      .on('click.buttonStart', { view: this }, this.startGame);
+
+    this.$buttonPause
+      .on('click.buttonPause', { view: this }, this.pauseGame);
 
 
-    this.$inputWidth = $output.find('.controls__width-input')
-      .on('blur.inputWidth', this.changeWidth.bind(this))
+    this.$inputWidth
+      .on('blur.inputWidth', { field: this }, this.changeWidth)
       .on('keyup.inputWidth', this.inputKeyUp)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
 
 
-    this.$inputHeight = $output.find('.controls__height-input')
-      .on('blur.inputHeight', this.changeHeight.bind(this))
+    this.$inputHeight
+      .on('blur.inputHeight', { field: this }, this.changeHeight)
       .on('keyup.inputHeight', this.inputKeyUp)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
+  }
 
-
-    this._canvas = $output.find('canvas')[0];
-
-    this.cellSize = parseFloat($output.find('.field').css('font-size'));
-
+  createCanvas() {
     this._canvas.width = this._width * this.cellSize;
     this._canvas.height = this._height * this.cellSize;
 
@@ -10492,7 +10602,6 @@ class View {
       y: parseInt(e.offsetY / this.cellSize, 10) }));
   }
 
-
   reDraw(field) {
     this._canvas.width = this._width * this.cellSize;
     this._canvas.height = this._height * this.cellSize;
@@ -10509,36 +10618,37 @@ class View {
       });
     });
   }
-  /* eslint-disable class-methods-use-this, no-undef */
 
-
-  startGame() {
-    this.events.emit('startGame');
+  /* eslint-disable class-methods-use-this, */
+  startGame(e) {
+    e.data.view.events.emit('startGame');
   }
 
-  pause() {
-    this.events.emit('pause');
+  pauseGame(e) {
+    e.data.view.events.emit('pause');
   }
   changeWidth(e) {
-    this._width = e.currentTarget.value;
-    this._canvas.width = this._width * this.cellSize;
-    this.events.emit('changeWidth', e.currentTarget.value);
+    e.data.field._width = $(e.currentTarget).val();
+    e.data.field._canvas.width = e.data.field._width * e.data.field.cellSize;
+    e.data.field.events.emit('changeWidth', $(e.currentTarget).val());
   }
 
   changeHeight(e) {
-    this._height = e.currentTarget.value;
-    this._canvas.height = this._height * this.cellSize;
-    this.events.emit('changeHeight', e.currentTarget.value);
+    e.data.field._height = $(e.currentTarget).val();
+    e.data.field._canvas.height = e.data.field._height * e.data.field.cellSize;
+    e.data.field.events.emit('changeHeight', $(e.currentTarget).val());
   }
 
   inputKeyUp(e) {
-    if (e.currentTarget.value < 1) e.currentTarget.value = 1;
+    if (e.currentTarget.value < 1) $(e.currentTarget).val(1);
 
-    if (e.keyCode === 13) e.currentTarget.blur();
+    if (e.keyCode === 13) $(e.currentTarget).blur();
   }
+
   endGame() {
-    alert('Игра завершена!');
+    alert('Игра завершена!'); // eslint-disable-line no-undef
   }
+  /* eslint-enable */
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = View;
 
@@ -10546,7 +10656,7 @@ class View {
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -11185,13 +11295,13 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(6);
+var content = __webpack_require__(7);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -11199,7 +11309,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(11)(content, options);
+var update = __webpack_require__(12)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -11216,21 +11326,21 @@ if(false) {
 }
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(7)(undefined);
+exports = module.exports = __webpack_require__(8)(undefined);
 // imports
 
 
 // module
-exports.push([module.i, "@font-face {\n  font-family: LatoLight;\n  src: url(" + __webpack_require__(8) + ") format('woff'), url(" + __webpack_require__(9) + ") format('truetype'), url(" + __webpack_require__(10) + "#LatoLight) format('svg');\n  font-style: normal;\n  font-weight: 300;\n}\nbody {\n  font-family: LatoLight;\n  font-style: normal;\n  font-weight: 300;\n}\n.container {\n  width: 1100px;\n  margin: auto;\n  margin-top: 3%;\n}\n.container .controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin-bottom: 2em;\n}\n.container .controls > * {\n  margin-right: 2em;\n}\n.container .controls > * input::-ms-clear {\n  display: none;\n}\n.container .controls > * span {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  font-size: 1.2em;\n}\n.container .field canvas {\n  margin: auto;\n  display: block;\n  border: solid #000 1px;\n}\n", ""]);
+exports.push([module.i, "@font-face {\n  font-family: LatoLight;\n  src: url(" + __webpack_require__(9) + ") format('woff'), url(" + __webpack_require__(10) + ") format('truetype'), url(" + __webpack_require__(11) + "#LatoLight) format('svg');\n  font-style: normal;\n  font-weight: 300;\n}\nbody {\n  font-family: LatoLight;\n  font-style: normal;\n  font-weight: 300;\n}\n.container {\n  width: 1100px;\n  margin: auto;\n  margin-top: 3%;\n}\n.container .controls {\n  display: -webkit-box;\n  display: -ms-flexbox;\n  display: flex;\n  margin-bottom: 2em;\n}\n.container .controls > * {\n  margin-right: 2em;\n}\n.container .controls > * input::-ms-clear {\n  display: none;\n}\n.container .controls > * span {\n  -webkit-user-select: none;\n     -moz-user-select: none;\n      -ms-user-select: none;\n          user-select: none;\n  font-size: 1.2em;\n}\n.container .field canvas {\n  margin: auto;\n  display: block;\n  border: solid #000 1px;\n}\n", ""]);
 
 // exports
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 /*
@@ -11312,25 +11422,25 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "Lato-Light.woff";
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "Lato-Light.ttf";
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "Lato-Light.svg";
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -11376,7 +11486,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(12);
+var	fixUrls = __webpack_require__(13);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -11689,7 +11799,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 
@@ -11784,7 +11894,34 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 13 */
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const template = `
+    <main class="container">
+            <section class="controls">
+                <button class="controls__btn-start">Старт</button>
+                <button class="controls__btn-pause">Пауза</button>
+                <div class="controls__width">
+                    <span>Ширина: </span>
+                    <input class="controls__width-input" type="number" min="1" value={{width}} />
+                </div>
+                <div class="controls__height">
+                    <span>Высота: </span>
+                    <input class="controls__height-input" type="number" min="1" value={{height}} />
+                </div>
+            </section>
+            <section class="field">
+                <canvas id="field__canvas">
+            </section>
+    </main>
+        `;
+/* harmony default export */ __webpack_exports__["a"] = (template);
+
+
+/***/ }),
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -11818,137 +11955,105 @@ class EventEmitter {
 
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-const template = `
-    <main class="container">
-            <section class="controls">
-                <button class="controls__btn-start">Старт</button>
-                <button class="controls__btn-pause">Пауза</button>
-                <div class="controls__width">
-                    <span>Ширина: </span>
-                    <input class="controls__width-input" type="number" min="1" value={{width}} />
-                </div>
-                <div class="controls__height">
-                    <span>Высота: </span>
-                    <input class="controls__height-input" type="number" min="1" value={{height}} />
-                </div>
-            </section>
-            <section class="field">
-                <canvas class="field__canvas">
-            </section>
-    </main>
-        `;
-/* harmony default export */ __webpack_exports__["a"] = (template);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cell__ = __webpack_require__(17);
 
 
-/***/ }),
-/* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cell__ = __webpack_require__(16);
-
-
-function arrayLengthCompare(array1, array2) {
-  if (array1.length === array2.length || array1[0].length === array2[0].length) { return true; }
-
-  return false;
+function createField(x, y) {
+  return Array.from({ length: x }, () => Array.from({ length: y }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]()));
 }
 
+function deepCopy(array) {
+  return array.map((line) => {
+    let newElement;
+
+    if (Array.isArray(line)) {
+      newElement = line.map((cell) => {
+        const newCell = Object.assign({}, cell);
+        newCell.__proto__ = Object.create(__WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */].prototype);// eslint-disable-line no-proto
+        return newCell;
+      });
+    } else {
+      newElement = Object.assign({}, line);
+      newElement.__proto__ = Object.create(__WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */].prototype);// eslint-disable-line no-proto
+    }
+    return newElement;
+  });
+}
+
+function arrayLengthCompare(array1, array2) {
+  return Boolean(array1.length === array2.length || array1[0].length === array2[0].length);
+}
 
 function isFieldChange(previousField, currentField) {
   if (!arrayLengthCompare(previousField, currentField)) { return true; }
 
-  return currentField.some((column, x) => column.some((cell, y) => cell.alive !== previousField[x][y].alive)); // eslint-disable-line max-len
-}
-
-function updateCell(neighbors, cell) {
-  if (neighbors === 3 || neighbors === 2 && cell.alive === true) return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */](true); // eslint-disable-line 
-
-  return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]();
+  return currentField.some((column, x) => (
+    column.some((cell, y) => (cell.alive !== previousField[x][y].alive
+    ))
+  ));
 }
 
 function sizeValidate(size) {
-  if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return size; }
+  if (!isNaN(parseInt(size, 10)) && isFinite(size) && size > 0) { return parseInt(size, 10); }
   return 1;
 }
 
 class Model {
   constructor(x, y) {
-    this.fieldChange = false;
+    this.isFieldChange = false;
 
-    this._cells = Array.from({ length: x }, () => Array.from({ length: y }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]()));
+    this._cells = createField(x, y);
   }
 
 
   getCells() {
-    return JSON.parse(JSON.stringify(this._cells));
+    return deepCopy(this._cells);
   }
 
   killCell(x, y) {
-    this._cells[x][y].alive = false;
+    this._cells[x][y].kill();
   }
 
   restoreCell(x, y) {
-    this._cells[x][y].alive = true;
+    this._cells[x][y].restore();
   }
 
   changeCell(x, y) {
-    this._cells[x][y].alive ? this.killCell(x, y) : this.restoreCell(x, y);
+    if (this._cells[x][y].alive) { this.killCell(x, y); } else { this.restoreCell(x, y); }
   }
-
-  countNeighbors(x, y) {
+  updateCell(_x, _y) {
     let neighbors = 0;
 
-    if (x > 0 && y > 0) {
-      neighbors += this._cells[x - 1][y - 1].alive;
+    const dx = [-1, -1, -1, 0, 0, 1, 1, 1];
+    const dy = [-1, 0, 1, -1, 1, -1, 0, 1];
+
+
+    for (let i = 0; i < dx.length; i += 1) {
+      const x = _x + dx[i];
+      const y = _y + dy[i];
+
+      if (x >= 0 && x < this._cells.length && y >= 0 && y < this._cells[0].length) {
+        if (this._cells[x][y].alive === true) {
+          neighbors += 1;
+        }
+      }
     }
 
-    if (x > 0) {
-      neighbors += this._cells[x - 1][y].alive;
-    }
+  if (neighbors === 3 || neighbors === 2 && this._cells[_x][_y].alive === true) return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */](true); // eslint-disable-line 
 
-    if (x > 0 && y < this._cells[0].length - 1) {
-      neighbors += this._cells[x - 1][y + 1].alive;
-    }
-
-    if (y > 0) {
-      neighbors += this._cells[x][y - 1].alive;
-    }
-
-    if (y < this._cells[0].length - 1) {
-      neighbors += this._cells[x][y + 1].alive;
-    }
-
-    if (x < this._cells.length - 1 && y > 0) {
-      neighbors += this._cells[x + 1][y - 1].alive;
-    }
-
-    if (x < this._cells.length - 1) {
-      neighbors += this._cells[x + 1][y].alive;
-    }
-
-    if (x < this._cells.length - 1 && y < this._cells[0].length - 1) {
-      neighbors += this._cells[x + 1][y + 1].alive;
-    }
-
-    return neighbors;
+    return new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]();
   }
 
   updateCells() {
-    const previousfield = JSON.parse(JSON.stringify(this._cells));
+    const previousField = deepCopy(this._cells);
 
-    this._cells = this._cells.map((line, x) => line.map((cell, y) => {
-      const neighbors = this.countNeighbors(x, y);
+    this._cells = this._cells.map((line, x) => line.map((cell, y) => this.updateCell(x, y)));
 
-      return updateCell(neighbors, cell);
-    }));
-
-
-    this.fieldChange = isFieldChange(previousfield, this._cells);
+    this.isFieldChange = isFieldChange(previousField, this._cells);
   }
 
   changeWidth(_x) {
@@ -11958,10 +12063,7 @@ class Model {
     if (x < this._cells.length) {
       this._cells.splice(x, Number.MAX_VALUE);
     } else {
-      const newColumns = x - this._cells.length;
-      for (let i = 0; i < newColumns; i += 1) {
-        this._cells.push(Array.from({ length: this._cells[0].length }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]()));
-      }
+      this._cells = this._cells.concat(createField(x - this._cells.length, this._cells[0].length));
     }
   }
 
@@ -11975,91 +12077,37 @@ class Model {
       const newCells = Array.from({ length: y - this._cells[0].length }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]());
 
       this._cells = this._cells.map(line =>
-        line.concat(JSON.parse(JSON.stringify(newCells))));
+        line.concat(deepCopy(newCells)));
     }
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Model;
 
 
-/*eslint-disable*/
 
-if (!Array.from) {
-  Array.from = (function() {
-    var toStr = Object.prototype.toString;
-    var isCallable = function(fn) {
-      return typeof fn === 'function' || toStr.call(fn) === '[object Function]';
-    };
-    var toInteger = function (value) {
-      var number = Number(value);
-      if (isNaN(number)) { return 0; }
-      if (number === 0 || !isFinite(number)) { return number; }
-      return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
-    };
-    var maxSafeInteger = Math.pow(2, 53) - 1;
-    var toLength = function (value) {
-      var len = toInteger(value);
-      return Math.min(Math.max(len, 0), maxSafeInteger);
-    };
-
-    return function from(arrayLike/*, mapFn, thisArg */) {
-
-      var C = this;
-
-      var items = Object(arrayLike);
-
-      if (arrayLike == null) {
-        throw new TypeError('Array.from requires an array-like object - not null or undefined');
-      }
-
-      var mapFn = arguments[1];
-      if (typeof mapFn !== 'undefined') {
-        mapFn = arguments.length > 1 ? arguments[1] : void undefined;
-
-        if (!isCallable(mapFn)) {
-          throw new TypeError('Array.from: when provided, the second argument must be a function');
-        }
-
-        if (arguments.length > 2) {
-          T = arguments[2];
-        }
-      }
-
-      var len = toLength(items.length);
-
-      var A = isCallable(C) ? Object(new C(len)) : new Array(len);
-
-      var k = 0;
-
-      var kValue;
-      while (k < len) {
-        kValue = items[k];
-        if (mapFn) {
-          A[k] = typeof T === 'undefined' ? mapFn(kValue, k) : mapFn.call(T, kValue, k);
-        } else {
-          A[k] = kValue;
-        }
-        k += 1;
-      }
-
-      A.length = len;
-
-      return A;
-    };
-  }());
-}
-
-/*eslint-disable*/
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/*eslint-disable*/
 class Cell {
   constructor(alive = false) {
-    this.alive = alive;
+    this._alive = alive;
   }
+
+    get alive() {
+      return this._alive;
+    }
+  
+    kill() {
+      this._alive = false;
+    }
+  
+   restore() {
+     this._alive = true;
+   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Cell;
 
