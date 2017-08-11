@@ -29,7 +29,10 @@ function arrayLengthCompare(array1, array2) {
 function isFieldChange(previousField, currentField) {
   if (!arrayLengthCompare(previousField, currentField)) { return true; }
 
-  return currentField.some((column, x) => column.some((cell, y) => cell.alive !== previousField[x][y].alive)); // eslint-disable-line max-len
+  return currentField.some((column, x) => (
+    column.some((cell, y) => (cell.alive !== previousField[x][y].alive
+    ))
+  ));
 }
 
 function sizeValidate(size) {
