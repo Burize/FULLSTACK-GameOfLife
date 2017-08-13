@@ -15,4 +15,9 @@ export default class Cell {
    restore() {
      this._alive = true;
    }
+    
+    toPrimitive(){
+
+        return {alive: this.alive};
+    }
 }

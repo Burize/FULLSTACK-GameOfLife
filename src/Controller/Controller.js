@@ -34,8 +34,6 @@ export default class Controller {
     this._view.events.subscribe('changeWidth', this.changeWidth);
 
     this._view.events.subscribe('changeHeight', this.changeHeight);
-
-    console.log(this);
   }
 
   startGame() {

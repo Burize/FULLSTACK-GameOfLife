@@ -5,11 +5,7 @@ function createField(x, y) {
 }
 
 function deepCopy(array) {
-  return array.map(line => line.map((cell) => {
-    const newElement = Object.assign({}, cell);
-    newElement.__proto__ = Object.create(Cell.prototype);// eslint-disable-line no-proto
-    return newElement;
-  }));
+  return array.map(line => line.map(cell => cell.toPrimitive()));
 }
 
 function arrayLengthCompare(array1, array2) {
@@ -86,7 +82,6 @@ export default class Model {
 
   changeWidth(_x) {
     const x = sizeValidate(_x);
-    console.log('asd');
 
     if (x < this._cells.length) {
       this._cells.splice(x, Number.MAX_VALUE);
