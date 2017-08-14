@@ -1,6 +1,7 @@
 import View from '../View/View';
 import Model from '../Model/Model';
 
+const autobind = require('auto-bind');
 
 export default class Controller {
   constructor(x, y) {
@@ -12,19 +13,8 @@ export default class Controller {
 
     this._view = new View(x, y);
 
-    /* eslint-disable no-proto */
-    this.__proto__.updateField = this.updateField.bind(this);
+    autobind(this);
 
-    this.__proto__.startGame = this.startGame.bind(this);
-
-    this.__proto__.pauseGame = this.pauseGame.bind(this);
-
-    this.__proto__.changeCell = this.changeCell.bind(this);
-
-    this.__proto__.changeWidth = this.changeWidth.bind(this);
-
-    this.changeHeight = this.changeHeight.bind(this);
-    /* eslint-enable */
     this._view.events.subscribe('startGame', this.startGame);
 
     this._view.events.subscribe('pause', this.pauseGame);

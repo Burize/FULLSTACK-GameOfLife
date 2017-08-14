@@ -10425,6 +10425,7 @@ if (!Array.from) {
 
 
 
+const autobind = __webpack_require__(18);
 
 class Controller {
   constructor(x, y) {
@@ -10436,23 +10437,13 @@ class Controller {
 
     this._view = new __WEBPACK_IMPORTED_MODULE_0__View_View__["a" /* default */](x, y);
 
-    this.updateField = this.updateField.bind(this);
-
-    this.startGame = this.startGame.bind(this);
-
-    this.pauseGame = this.pauseGame.bind(this);
-
-    this.fieldClick = this.fieldClick.bind(this);
-
-    this.changeWidth = this.changeWidth.bind(this);
-
-    this.changeHeight = this.changeHeight.bind(this);
+    autobind(this);
 
     this._view.events.subscribe('startGame', this.startGame);
 
     this._view.events.subscribe('pause', this.pauseGame);
 
-    this._view.events.subscribe('fieldClick', this.fieldClick);
+    this._view.events.subscribe('changeCell', this.changeCell);
 
     this._view.events.subscribe('changeWidth', this.changeWidth);
 
@@ -10487,7 +10478,7 @@ class Controller {
     clearTimeout(this._gameTimer);
   }
 
-  fieldClick(coordinates) {
+  changeCell(coordinates) {
     if (this._isPause) {
       this._model.changeCell(coordinates.x, coordinates.y);
       this._view.reDraw(this._model.getCells());
@@ -10570,7 +10561,8 @@ class View {
 
     this.$inputWidth
       .on('blur.inputWidth', { field: this }, this.changeWidth)
-      .on('keyup.inputWidth', this.inputKeyUp)
+      .on('keyup.inputWidthValueValidate', this.positiveValue)
+      .on('keyup.inputWidthEnter', this.blurOnEnter)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
@@ -10578,7 +10570,8 @@ class View {
 
     this.$inputHeight
       .on('blur.inputHeight', { field: this }, this.changeHeight)
-      .on('keyup.inputHeight', this.inputKeyUp)
+      .on('keyup.inputHeightValueValidate', this.positiveValue)
+      .on('keyup.inputHeightEnter', this.blurOnEnter)
       .on('click.mozillaSpecial', function () {
         $(this).focus();
       });
@@ -10598,7 +10591,7 @@ class View {
       }
     }
 
-    $(this._canvas).click(e => this.events.emit('fieldClick', { x: parseInt(e.offsetX / this.cellSize, 10),
+    $(this._canvas).click(e => this.events.emit('changeCell', { x: parseInt(e.offsetX / this.cellSize, 10),
       y: parseInt(e.offsetY / this.cellSize, 10) }));
   }
 
@@ -10639,9 +10632,11 @@ class View {
     e.data.field.events.emit('changeHeight', $(e.currentTarget).val());
   }
 
-  inputKeyUp(e) {
+  positiveValue(e) {
     if (e.currentTarget.value < 1) $(e.currentTarget).val(1);
+  }
 
+  blurOnEnter(e) {
     if (e.keyCode === 13) $(e.currentTarget).blur();
   }
 
@@ -11967,21 +11962,7 @@ function createField(x, y) {
 }
 
 function deepCopy(array) {
-  return array.map((line) => {
-    let newElement;
-
-    if (Array.isArray(line)) {
-      newElement = line.map((cell) => {
-        const newCell = Object.assign({}, cell);
-        newCell.__proto__ = Object.create(__WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */].prototype);// eslint-disable-line no-proto
-        return newCell;
-      });
-    } else {
-      newElement = Object.assign({}, line);
-      newElement.__proto__ = Object.create(__WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */].prototype);// eslint-disable-line no-proto
-    }
-    return newElement;
-  });
+  return array.map(line => line.map(cell => cell.toPrimitive()));
 }
 
 function arrayLengthCompare(array1, array2) {
@@ -12059,7 +12040,6 @@ class Model {
   changeWidth(_x) {
     const x = sizeValidate(_x);
 
-
     if (x < this._cells.length) {
       this._cells.splice(x, Number.MAX_VALUE);
     } else {
@@ -12074,10 +12054,8 @@ class Model {
     if (y < this._cells[0].length) {
       this._cells.forEach(line => line.splice(y, Number.MAX_VALUE));
     } else {
-      const newCells = Array.from({ length: y - this._cells[0].length }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]());
-
       this._cells = this._cells.map(line =>
-        line.concat(deepCopy(newCells)));
+        line.concat(Array.from({ length: y - this._cells[0].length }, () => new __WEBPACK_IMPORTED_MODULE_0__Cell__["a" /* default */]())));
     }
   }
 }
@@ -12108,9 +12086,33 @@ class Cell {
    restore() {
      this._alive = true;
    }
+    
+    toPrimitive(){
+
+        return {alive: this.alive};
+    }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Cell;
 
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = self => {
+	for (const key of Object.getOwnPropertyNames(self.constructor.prototype)) {
+		const val = self[key];
+
+		if (key !== 'constructor' && typeof val === 'function') {
+			self[key] = val.bind(self);
+		}
+	}
+
+	return self;
+};
 
 
 /***/ })

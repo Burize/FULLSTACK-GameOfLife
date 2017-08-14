@@ -11,15 +11,16 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "youch": "^2.0.4",
+    "auto-bind": "^1.1.0",
     "classnames": "^2.2.5",
     "jquery": "*",
     "jquery-ui": "*",
     "jquery-ui-bundle": "^1.11.4",
     "less": "^2.7.2",
+    "mustache": "^2.3.0",
     "react": "*",
     "react-dom": "*",
-    "mustache": "^2.3.0"
+    "youch": "^2.0.4"
   },
   "devDependencies": {
     "Canteen": "^1.0.4",
